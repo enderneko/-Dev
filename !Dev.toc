@@ -1,0 +1,11 @@
+## Interface: 90000
+## Title: |cFFFF3030DevTools|r
+## Version: 1
+## Author: 篠崎
+
+Libs\LoadLibs.xml
+
+DevInstanceDebuffs.lua
+
+DevButtons.lua
+idTip.lua
