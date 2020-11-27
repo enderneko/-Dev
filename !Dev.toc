@@ -2,10 +2,14 @@
 ## Title: |cFFFF3030DevTools|r
 ## Version: 1
 ## Author: 篠崎
+## SavedVariables: DevDB,DevInstanceDebuffs
 
 Libs\LoadLibs.xml
 
-DevInstanceDebuffs.lua
-
-DevButtons.lua
+Core.lua
 idTip.lua
+
+DevMain.lua
+
+DevInstanceDebuffs.lua
+DevButtons.lua

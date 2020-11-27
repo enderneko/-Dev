@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
     <Script file="LibStub\LibStub.lua"/> 
     <!-- <Include file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/> -->
-	<!-- <Script file="CustomEvents.lua"/> -->
+	<Script file="CallbackHandler.lua"/>
     <Script file="LibPixelPerfect.lua"/>
 	<Script file="LibWidgets.lua"/>
 </Ui>

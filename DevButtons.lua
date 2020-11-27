@@ -82,12 +82,13 @@ devButtonsFrame:SetScript("OnDragStop", function()
     LPP:PixelPerfectPoint(devButtonsFrame)
 end)
 devButtonsFrame:SetScript("OnShow", function()
-    LPP:PixelPerfectPoint(devButtonsFrame)
+    -- LPP:PixelPerfectPoint(devButtonsFrame)
 end)
 
-local title = devButtonsFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+local title = devButtonsFrame:CreateFontString(nil, "OVERLAY", "DEV_FONT_TITLE")
 title:SetPoint("TOP", 0, -3)
 title:SetText("Dev Buttons")
+title:SetTextColor(.9, .9, .1)
 
 Dev.dialog = Dev:CreateScrollEditBox(devButtonsFrame)
 Dev.dialog:SetPoint("CENTER", UIParent)
@@ -174,7 +175,6 @@ function eventFrame:PLAYER_ENTERING_WORLD()
     end
 
     devButtonsFrame:SetSize(BUTTON_WIDTH + SPACING * 2, #buttons * (BUTTON_HEIGHT + SPACING) + 20 + numEB * BUTTON_HEIGHT)
-    devButtonsFrame:Show()
 end
 
 eventFrame.PLAYER_REGEN_ENABLED = eventFrame.PLAYER_ENTERING_WORLD
@@ -182,3 +182,22 @@ eventFrame.PLAYER_REGEN_ENABLED = eventFrame.PLAYER_ENTERING_WORLD
 eventFrame:SetScript("OnEvent", function(self, event, ...)
 	self[event](self, ...)
 end)
+
+local devButtonsBtn = Dev:CreateMainButton(1, 461790, function(self)
+    DevDB["showDevButtons"] = not DevDB["showDevButtons"]
+    if DevDB["showDevButtons"] then
+        self.tex:SetDesaturated(false)
+        devButtonsFrame:Show()
+    else
+        self.tex:SetDesaturated(true)
+        devButtonsFrame:Hide()
+    end
+end)
+
+local function UpdateVisibility()
+    if DevDB["showDevButtons"] then
+        devButtonsFrame:Show()
+        devButtonsBtn.tex:SetDesaturated(false)
+    end
+end
+Dev:RegisterCallback("UpdateVisibility", "DevButtons_UpdateVisibility", UpdateVisibility)

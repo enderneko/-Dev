@@ -1,6 +1,33 @@
 local addonName, addon = ...
 -- local LPP = LibStub:GetLibrary("LibPixelPerfect")
 
+-----------------------------------------
+-- font
+-----------------------------------------
+local font_normal = CreateFont("DEV_FONT_NORMAL")
+font_normal:SetFont(GameFontNormal:GetFont(), 13)
+font_normal:SetTextColor(1, 1, 1, 1)
+font_normal:SetShadowColor(0, 0, 0)
+font_normal:SetShadowOffset(1, -1)
+font_normal:SetJustifyH("CENTER")
+
+local font_disabled = CreateFont("DEV_FONT_DISABLED")
+font_disabled:SetFont(GameFontNormal:GetFont(), 13)
+font_disabled:SetTextColor(.4, .4, .4, 1)
+font_disabled:SetShadowColor(0, 0, 0)
+font_disabled:SetShadowOffset(1, -1)
+font_disabled:SetJustifyH("CENTER")
+
+local font_title = CreateFont("DEV_FONT_TITLE")
+font_title:SetFont(GameFontNormal:GetFont(), 14)
+font_title:SetTextColor(1, 1, 1, 1)
+font_title:SetShadowColor(0, 0, 0)
+font_title:SetShadowOffset(1, -1)
+font_title:SetJustifyH("CENTER")
+
+-----------------------------------------
+-- frame
+-----------------------------------------
 local class = select(2, UnitClass("player"))
 local classColor = {s="|cCCB2B2B2", t={.7, .7, .7}}
 if class then
@@ -173,9 +200,9 @@ function addon:CreateButton(parent, text, buttonColor, size, noBorder, ...)
 
 
 	b:SetBackdropColor(unpack(color)) 
-	b:SetDisabledFontObject("GameFontDisableSmall2")
-    b:SetNormalFontObject("GameFontWhite")
-	b:SetHighlightFontObject("GameFontWhite")
+	b:SetDisabledFontObject(font_disabled)
+    b:SetNormalFontObject(font_normal)
+	b:SetHighlightFontObject(font_normal)
 	
 	if buttonColor ~= "none" then
 		b:SetScript("OnEnter", function(self) self:SetBackdropColor(unpack(hoverColor)) end)
@@ -230,7 +257,7 @@ end
 -----------------------------------------
 function addon:CreateEditBox(parent, width, height, isTransparent, isMultiLine, isNumeric)
 	local eb = CreateFrame("EditBox", nil, parent, "BackdropTemplate")
-	if not isTransparent then addon:StylizeFrame(eb, {0, 0, 0, .7}) end
+	if not isTransparent then addon:StylizeFrame(eb, {.1, .1, .1, .9}) end
 	eb:SetFontObject("GameFontWhite")
 	eb:SetMultiLine(isMultiLine)
 	eb:SetMaxLetters(0)
@@ -352,214 +379,214 @@ end
 -- create scroll frame (with scrollbar & content frame)
 -----------------------------------------------------------------------------------
 function addon:CreateScrollFrame(parent, top, bottom, color, border)
-	-- create scrollFrame & scrollbar seperately (instead of UIPanelScrollFrameTemplate), in order to custom it
-	local scrollFrame = CreateFrame("ScrollFrame", parent:GetName() and parent:GetName().."ScrollFrame" or nil, parent, "BackdropTemplate")
-	parent.scrollFrame = scrollFrame
-	top = top or 0
-	bottom = bottom or 0
-	scrollFrame:SetPoint("TOPLEFT", 0, top) 
-	scrollFrame:SetPoint("BOTTOMRIGHT", 0, bottom)
+    -- create scrollFrame & scrollbar seperately (instead of UIPanelScrollFrameTemplate), in order to custom it
+    local scrollFrame = CreateFrame("ScrollFrame", parent:GetName() and parent:GetName().."ScrollFrame" or nil, parent, "BackdropTemplate")
+    parent.scrollFrame = scrollFrame
+    top = top or 0
+    bottom = bottom or 0
+    scrollFrame:SetPoint("TOPLEFT", 0, top) 
+    scrollFrame:SetPoint("BOTTOMRIGHT", 0, bottom)
 
-	if color then
-		addon:StylizeFrame(scrollFrame, color, border)
-	end
+    if color then
+        addon:StylizeFrame(scrollFrame, color, border)
+    end
 
-	function scrollFrame:Resize(newTop, newBottom)
-		top = newTop
-		bottom = newBottom
-		scrollFrame:SetPoint("TOPLEFT", 0, top) 
-		scrollFrame:SetPoint("BOTTOMRIGHT", 0, bottom)
-	end
-	
-	-- content
-	local content = CreateFrame("Frame", nil, scrollFrame)
-	content:SetSize(scrollFrame:GetWidth(), 2)
-	scrollFrame:SetScrollChild(content)
-	scrollFrame.content = content
-	-- content:SetFrameLevel(2)
-	
-	-- scrollbar
-	local scrollbar = CreateFrame("Frame", nil, scrollFrame, "BackdropTemplate")
-	scrollbar:SetPoint("TOPLEFT", scrollFrame, "TOPRIGHT", 2, 0)
-	scrollbar:SetPoint("BOTTOMRIGHT", scrollFrame, 7, 0)
-	scrollbar:Hide()
-	addon:StylizeFrame(scrollbar, {.1, .1, .1, .8})
-	scrollFrame.scrollbar = scrollbar
-	
-	-- scrollbar thumb
-	local scrollThumb = CreateFrame("Frame", nil, scrollbar, "BackdropTemplate")
-	scrollThumb:SetWidth(5) -- scrollbar's width is 5
-	scrollThumb:SetHeight(scrollbar:GetHeight())
-	scrollThumb:SetPoint("TOP")
-	addon:StylizeFrame(scrollThumb, {classColor.t[1], classColor.t[2], classColor.t[3], .8})
-	scrollThumb:EnableMouse(true)
-	scrollThumb:SetMovable(true)
-	scrollThumb:SetHitRectInsets(-5, -5, 0, 0) -- Frame:SetHitRectInsets(left, right, top, bottom)
-	scrollFrame.scrollThumb = scrollThumb
-	
-	-- reset content height manually ==> content:GetBoundsRect() make it right @OnUpdate
-	function scrollFrame:ResetHeight()
-		content:SetHeight(2)
-	end
-	
-	-- reset to top, useful when used with DropDownMenu (variable content height)
-	function scrollFrame:ResetScroll()
-		scrollFrame:SetVerticalScroll(0)
-	end
-	
-	-- FIXME: GetVerticalScrollRange goes wrong in 9.0.1
-	function scrollFrame:GetVerticalScrollRange()
-		local range = content:GetHeight() - scrollFrame:GetHeight()
-		return range > 0 and range or 0
-	end
+    function scrollFrame:Resize(newTop, newBottom)
+        top = newTop
+        bottom = newBottom
+        scrollFrame:SetPoint("TOPLEFT", 0, top) 
+        scrollFrame:SetPoint("BOTTOMRIGHT", 0, bottom)
+    end
+    
+    -- content
+    local content = CreateFrame("Frame", nil, scrollFrame)
+    content:SetSize(scrollFrame:GetWidth(), 2)
+    scrollFrame:SetScrollChild(content)
+    scrollFrame.content = content
+    -- content:SetFrameLevel(2)
+    
+    -- scrollbar
+    local scrollbar = CreateFrame("Frame", nil, scrollFrame, "BackdropTemplate")
+    scrollbar:SetPoint("TOPLEFT", scrollFrame, "TOPRIGHT", 2, 0)
+    scrollbar:SetPoint("BOTTOMRIGHT", scrollFrame, 7, 0)
+    scrollbar:Hide()
+    addon:StylizeFrame(scrollbar, {.1, .1, .1, .8})
+    scrollFrame.scrollbar = scrollbar
+    
+    -- scrollbar thumb
+    local scrollThumb = CreateFrame("Frame", nil, scrollbar, "BackdropTemplate")
+    scrollThumb:SetWidth(5) -- scrollbar's width is 5
+    scrollThumb:SetHeight(scrollbar:GetHeight())
+    scrollThumb:SetPoint("TOP")
+    addon:StylizeFrame(scrollThumb, {classColor.t[1], classColor.t[2], classColor.t[3], .8})
+    scrollThumb:EnableMouse(true)
+    scrollThumb:SetMovable(true)
+    scrollThumb:SetHitRectInsets(-5, -5, 0, 0) -- Frame:SetHitRectInsets(left, right, top, bottom)
+    scrollFrame.scrollThumb = scrollThumb
+    
+    -- reset content height manually ==> content:GetBoundsRect() make it right @OnUpdate
+    function scrollFrame:ResetHeight()
+        content:SetHeight(2)
+    end
+    
+    -- reset to top, useful when used with DropDownMenu (variable content height)
+    function scrollFrame:ResetScroll()
+        scrollFrame:SetVerticalScroll(0)
+    end
+    
+    -- FIXME: GetVerticalScrollRange goes wrong in 9.0.1
+    function scrollFrame:GetVerticalScrollRange()
+        local range = content:GetHeight() - scrollFrame:GetHeight()
+        return range > 0 and range or 0
+    end
 
-	-- local scrollRange -- ACCURATE scroll range, for SetVerticalScroll(), instead of scrollFrame:GetVerticalScrollRange()
-	function scrollFrame:VerticalScroll(step)
-		local scroll = scrollFrame:GetVerticalScroll() + step
-		-- if CANNOT SCROLL then scroll = -25/25, scrollFrame:GetVerticalScrollRange() = 0
-		-- then scrollFrame:SetVerticalScroll(0) and scrollFrame:SetVerticalScroll(scrollFrame:GetVerticalScrollRange()) ARE THE SAME
-		if scroll <= 0 then
-			scrollFrame:SetVerticalScroll(0)
-		elseif scroll >= scrollFrame:GetVerticalScrollRange() then
-			scrollFrame:SetVerticalScroll(scrollFrame:GetVerticalScrollRange())
-		else
-			scrollFrame:SetVerticalScroll(scroll)
-		end
-	end
+    -- local scrollRange -- ACCURATE scroll range, for SetVerticalScroll(), instead of scrollFrame:GetVerticalScrollRange()
+    function scrollFrame:VerticalScroll(step)
+        local scroll = scrollFrame:GetVerticalScroll() + step
+        -- if CANNOT SCROLL then scroll = -25/25, scrollFrame:GetVerticalScrollRange() = 0
+        -- then scrollFrame:SetVerticalScroll(0) and scrollFrame:SetVerticalScroll(scrollFrame:GetVerticalScrollRange()) ARE THE SAME
+        if scroll <= 0 then
+            scrollFrame:SetVerticalScroll(0)
+        elseif scroll >= scrollFrame:GetVerticalScrollRange() then
+            scrollFrame:SetVerticalScroll(scrollFrame:GetVerticalScrollRange())
+        else
+            scrollFrame:SetVerticalScroll(scroll)
+        end
+    end
 
-	-- NOTE: this func should not be called before Show, or GetVerticalScrollRange will be incorrect.
-	function scrollFrame:ScrollToBottom()
-		scrollFrame:SetVerticalScroll(scrollFrame:GetVerticalScrollRange())
-	end
+    -- NOTE: this func should not be called before Show, or GetVerticalScrollRange will be incorrect.
+    function scrollFrame:ScrollToBottom()
+        scrollFrame:SetVerticalScroll(scrollFrame:GetVerticalScrollRange())
+    end
 
-	function scrollFrame:SetContentHeight(height, num, spacing)
-		if num and spacing then
-			content:SetHeight(num*height+(num-1)*spacing)
-		else
-			content:SetHeight(height)
-		end
-	end
+    function scrollFrame:SetContentHeight(height, num, spacing)
+        if num and spacing then
+            content:SetHeight(num*height+(num-1)*spacing)
+        else
+            content:SetHeight(height)
+        end
+    end
 
-	--[[ BUG: not reliable
-	-- to remove/hide widgets "widget:SetParent(nil)" MUST be called!!!
-	scrollFrame:SetScript("OnUpdate", function()
-		-- set content height, check if it CAN SCROLL
-		local x, y, w, h = content:GetBoundsRect()
-		-- NOTE: if content is not IN SCREEN -> x,y<0 -> h==-y!
-		if x > 0 and y > 0 then
-			content:SetHeight(h)
-		end
-	end)
-	]]
-	
-	-- stores all widgets on content frame
-	-- local autoWidthWidgets = {}
+    --[[ BUG: not reliable
+    -- to remove/hide widgets "widget:SetParent(nil)" MUST be called!!!
+    scrollFrame:SetScript("OnUpdate", function()
+        -- set content height, check if it CAN SCROLL
+        local x, y, w, h = content:GetBoundsRect()
+        -- NOTE: if content is not IN SCREEN -> x,y<0 -> h==-y!
+        if x > 0 and y > 0 then
+            content:SetHeight(h)
+        end
+    end)
+    ]]
+    
+    -- stores all widgets on content frame
+    -- local autoWidthWidgets = {}
 
-	function scrollFrame:ClearContent()
-		for _, c in pairs({content:GetChildren()}) do
-			c:SetParent(nil)  -- or it will show (OnUpdate)
-			c:ClearAllPoints()
-			c:Hide()
-		end
-		-- wipe(autoWidthWidgets)
-		scrollFrame:ResetHeight()
-	end
+    function scrollFrame:ClearContent()
+        for _, c in pairs({content:GetChildren()}) do
+            c:SetParent(nil)  -- or it will show (OnUpdate)
+            c:ClearAllPoints()
+            c:Hide()
+        end
+        -- wipe(autoWidthWidgets)
+        scrollFrame:ResetHeight()
+    end
 
-	function scrollFrame:Reset()
-		scrollFrame:ResetScroll()
-		scrollFrame:ClearContent()
-	end
-	
-	-- function scrollFrame:SetWidgetAutoWidth(widget)
-	-- 	table.insert(autoWidthWidgets, widget)
-	-- end
-	
-	-- on width changed, make the same change to widgets
-	scrollFrame:SetScript("OnSizeChanged", function()
-		-- change widgets width (marked as auto width)
-		-- for i = 1, #autoWidthWidgets do
-		-- 	autoWidthWidgets[i]:SetWidth(scrollFrame:GetWidth())
-		-- end
-		
-		-- update content width
-		content:SetWidth(scrollFrame:GetWidth())
-	end)
+    function scrollFrame:Reset()
+        scrollFrame:ResetScroll()
+        scrollFrame:ClearContent()
+    end
+    
+    -- function scrollFrame:SetWidgetAutoWidth(widget)
+    -- 	table.insert(autoWidthWidgets, widget)
+    -- end
+    
+    -- on width changed, make the same change to widgets
+    scrollFrame:SetScript("OnSizeChanged", function()
+        -- change widgets width (marked as auto width)
+        -- for i = 1, #autoWidthWidgets do
+        -- 	autoWidthWidgets[i]:SetWidth(scrollFrame:GetWidth())
+        -- end
+        
+        -- update content width
+        content:SetWidth(scrollFrame:GetWidth())
+    end)
 
-	-- check if it can scroll
-	content:SetScript("OnSizeChanged", function()
-		-- set ACCURATE scroll range
-		-- scrollRange = content:GetHeight() - scrollFrame:GetHeight()
+    -- check if it can scroll
+    content:SetScript("OnSizeChanged", function()
+        -- set ACCURATE scroll range
+        -- scrollRange = content:GetHeight() - scrollFrame:GetHeight()
 
-		-- set thumb height (%)
-		local p = scrollFrame:GetHeight() / content:GetHeight()
-		p = tonumber(string.format("%.3f", p))
-		if p < 1 then -- can scroll
-			scrollThumb:SetHeight(scrollbar:GetHeight()*p)
-			-- space for scrollbar
-			scrollFrame:SetPoint("BOTTOMRIGHT", parent, -7, bottom)
-			scrollbar:Show()
-		else
-			scrollFrame:SetPoint("BOTTOMRIGHT", parent, 0, bottom)
-			scrollbar:Hide()
-			if scrollFrame:GetVerticalScroll() > 0 then scrollFrame:SetVerticalScroll(0) end
-		end
-	end)
+        -- set thumb height (%)
+        local p = scrollFrame:GetHeight() / content:GetHeight()
+        p = tonumber(string.format("%.3f", p))
+        if p < 1 then -- can scroll
+            scrollThumb:SetHeight(scrollbar:GetHeight()*p)
+            -- space for scrollbar
+            scrollFrame:SetPoint("BOTTOMRIGHT", parent, -7, bottom)
+            scrollbar:Show()
+        else
+            scrollFrame:SetPoint("BOTTOMRIGHT", parent, 0, bottom)
+            scrollbar:Hide()
+            if scrollFrame:GetVerticalScroll() > 0 then scrollFrame:SetVerticalScroll(0) end
+        end
+    end)
 
-	-- DO NOT USE OnScrollRangeChanged to check whether it can scroll.
-	-- "invisible" widgets should be hidden, then the scroll range is NOT accurate!
-	-- scrollFrame:SetScript("OnScrollRangeChanged", function(self, xOffset, yOffset) end)
-	
-	-- dragging and scrolling
-	scrollThumb:SetScript("OnMouseDown", function(self, button)
-		if button ~= 'LeftButton' then return end
-		local offsetY = select(5, scrollThumb:GetPoint(1))
-		local mouseY = select(2, GetCursorPosition())
-		local currentScroll = scrollFrame:GetVerticalScroll()
-		self:SetScript("OnUpdate", function(self)
-			--------------------- y offset before dragging + mouse offset
-			local newOffsetY = offsetY + (select(2, GetCursorPosition()) - mouseY)
-			
-			-- even scrollThumb:SetPoint is already done in OnVerticalScroll, but it's useful in some cases.
-			if newOffsetY >= 0 then -- @top
-				scrollThumb:SetPoint("TOP")
-				newOffsetY = 0
-			elseif (-newOffsetY) + scrollThumb:GetHeight() >= scrollbar:GetHeight() then -- @bottom
-				scrollThumb:SetPoint("TOP", 0, -(scrollbar:GetHeight() - scrollThumb:GetHeight()))
-				newOffsetY = -(scrollbar:GetHeight() - scrollThumb:GetHeight())
-			else
-				scrollThumb:SetPoint("TOP", 0, newOffsetY)
-			end
-			local vs = (-newOffsetY / (scrollbar:GetHeight()-scrollThumb:GetHeight())) * scrollFrame:GetVerticalScrollRange()
-			scrollFrame:SetVerticalScroll(vs)
-		end)
-	end)
+    -- DO NOT USE OnScrollRangeChanged to check whether it can scroll.
+    -- "invisible" widgets should be hidden, then the scroll range is NOT accurate!
+    -- scrollFrame:SetScript("OnScrollRangeChanged", function(self, xOffset, yOffset) end)
+    
+    -- dragging and scrolling
+    scrollThumb:SetScript("OnMouseDown", function(self, button)
+        if button ~= 'LeftButton' then return end
+        local offsetY = select(5, scrollThumb:GetPoint(1))
+        local mouseY = select(2, GetCursorPosition())
+        local currentScroll = scrollFrame:GetVerticalScroll()
+        self:SetScript("OnUpdate", function(self)
+            --------------------- y offset before dragging + mouse offset
+            local newOffsetY = offsetY + (select(2, GetCursorPosition()) - mouseY)
+            
+            -- even scrollThumb:SetPoint is already done in OnVerticalScroll, but it's useful in some cases.
+            if newOffsetY >= 0 then -- @top
+                scrollThumb:SetPoint("TOP")
+                newOffsetY = 0
+            elseif (-newOffsetY) + scrollThumb:GetHeight() >= scrollbar:GetHeight() then -- @bottom
+                scrollThumb:SetPoint("TOP", 0, -(scrollbar:GetHeight() - scrollThumb:GetHeight()))
+                newOffsetY = -(scrollbar:GetHeight() - scrollThumb:GetHeight())
+            else
+                scrollThumb:SetPoint("TOP", 0, newOffsetY)
+            end
+            local vs = (-newOffsetY / (scrollbar:GetHeight()-scrollThumb:GetHeight())) * scrollFrame:GetVerticalScrollRange()
+            scrollFrame:SetVerticalScroll(vs)
+        end)
+    end)
 
-	scrollThumb:SetScript("OnMouseUp", function(self)
-		self:SetScript("OnUpdate", nil)
-	end)
-	
-	scrollFrame:SetScript("OnVerticalScroll", function(self, offset)
-		if scrollFrame:GetVerticalScrollRange() ~= 0 then
-			local scrollP = scrollFrame:GetVerticalScroll()/scrollFrame:GetVerticalScrollRange()
-			local yoffset = -((scrollbar:GetHeight()-scrollThumb:GetHeight())*scrollP)
-			scrollThumb:SetPoint("TOP", 0, yoffset)
-		end
-	end)
-	
-	local step = 25
-	function scrollFrame:SetScrollStep(s)
-		step = s
-	end
-	
-	-- enable mouse wheel scroll
-	scrollFrame:EnableMouseWheel(true)
-	scrollFrame:SetScript("OnMouseWheel", function(self, delta)
-		if delta == 1 then -- scroll up
-			scrollFrame:VerticalScroll(-step)
-		elseif delta == -1 then -- scroll down
-			scrollFrame:VerticalScroll(step)
-		end
-	end)
-	
-	return scrollFrame
+    scrollThumb:SetScript("OnMouseUp", function(self)
+        self:SetScript("OnUpdate", nil)
+    end)
+    
+    scrollFrame:SetScript("OnVerticalScroll", function(self, offset)
+        if scrollFrame:GetVerticalScrollRange() ~= 0 then
+            local scrollP = scrollFrame:GetVerticalScroll()/scrollFrame:GetVerticalScrollRange()
+            local yoffset = -((scrollbar:GetHeight()-scrollThumb:GetHeight())*scrollP)
+            scrollThumb:SetPoint("TOP", 0, yoffset)
+        end
+    end)
+    
+    local step = 25
+    function scrollFrame:SetScrollStep(s)
+        step = s
+    end
+    
+    -- enable mouse wheel scroll
+    scrollFrame:EnableMouseWheel(true)
+    scrollFrame:SetScript("OnMouseWheel", function(self, delta)
+        if delta == 1 then -- scroll up
+            scrollFrame:VerticalScroll(-step)
+        elseif delta == -1 then -- scroll down
+            scrollFrame:VerticalScroll(step)
+        end
+    end)
+    
+    return scrollFrame
 end
