@@ -9,7 +9,7 @@ function eventFrame:ADDON_LOADED(arg1)
         if type(DevDB) ~= "table" then DevDB = {} end
         if type(DevInstanceDebuffs) ~= "table" then
             DevInstanceDebuffs = {
-                ["instances"] = {
+                ["trackings"] = {
                     -- [id] = {enabled, name},
                 },
             }

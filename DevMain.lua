@@ -25,9 +25,9 @@ devMainFrame:SetScript("OnShow", function()
     LPP:PixelPerfectPoint(devMainFrame)
 end)
 
-----------------------------------------------------------------------------
+-------------------------------------------------
 -- point and size
-----------------------------------------------------------------------------
+-------------------------------------------------
 local ICON_SIZE = 27
 local buttons = {}
 local function UpdateDevMain()
@@ -45,9 +45,9 @@ local function UpdateDevMain()
     devMainFrame:Show()
 end
 
-----------------------------------------------------------------------------
+-------------------------------------------------
 -- create button
-----------------------------------------------------------------------------
+-------------------------------------------------
 function Dev:CreateMainButton(index, icon, func)
     local b = CreateFrame("Button", nil, devMainFrame)
     buttons[index] = b
@@ -74,8 +74,8 @@ function Dev:CreateMainButton(index, icon, func)
     return b
 end
 
-----------------------------------------------------------------------------
+-------------------------------------------------
 -- init buttons
-----------------------------------------------------------------------------
+-------------------------------------------------
 -- CreateButton(461790, Dev.ShowDevButtons)
 -- CreateButton(254886, Dev.ShowInstanceDebuffs)

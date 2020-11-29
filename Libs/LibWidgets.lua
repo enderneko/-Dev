@@ -375,9 +375,9 @@ function addon:CreateSlider(parent, unit, low, high, length, step, onValueChange
 	return slider
 end
 
------------------------------------------------------------------------------------
+--------------------------------------------------------
 -- create scroll frame (with scrollbar & content frame)
------------------------------------------------------------------------------------
+--------------------------------------------------------
 function addon:CreateScrollFrame(parent, top, bottom, color, border)
     -- create scrollFrame & scrollbar seperately (instead of UIPanelScrollFrameTemplate), in order to custom it
     local scrollFrame = CreateFrame("ScrollFrame", parent:GetName() and parent:GetName().."ScrollFrame" or nil, parent, "BackdropTemplate")
