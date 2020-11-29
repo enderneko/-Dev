@@ -1,6 +1,9 @@
 local _, Dev = ...
 local LPP = LibStub:GetLibrary("LibPixelPerfect")
 
+local currentInstanceName, currentInstanceID
+local LoadInstances
+
 local instanceDebuffs = CreateFrame("Frame", "DevInstanceDebuffs", nil, "BackdropTemplate")
 LPP:PixelPerfectScale(instanceDebuffs)
 instanceDebuffs:Hide()
@@ -36,6 +39,15 @@ instanceIDText:SetPoint("TOPLEFT", instanceNameText, "BOTTOMLEFT", 0, -5)
 
 local addBtn = Dev:CreateButton(instanceDebuffs, "Add Current Instance", "red", {190, 20})
 addBtn:SetPoint("TOPLEFT", 5, -60)
+addBtn:SetScript("OnClick", function()
+    if currentInstanceName and currentInstanceID then
+        if not DevInstanceDebuffs["instances"][currentInstanceID] then
+            DevInstanceDebuffs["instances"][currentInstanceID] = {true, currentInstanceName}
+            LoadInstances()
+            instanceDebuffs:PLAYER_ENTERING_WORLD()
+        end
+    end
+end)
 
 local instanceListFrame = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
 Dev:StylizeFrame(instanceListFrame)
@@ -46,7 +58,7 @@ Dev:CreateScrollFrame(instanceListFrame)
 
 local instanceButtons = {}
 
-local function LoadInstances()
+LoadInstances = function()
     wipe(instanceButtons)
     instanceListFrame.scrollFrame:Reset()
 
@@ -54,10 +66,15 @@ local function LoadInstances()
     for id, t in pairs(DevInstanceDebuffs["instances"]) do
         local b = Dev:CreateButton(instanceListFrame.scrollFrame.content, id.." "..t[2], "red-hover", {20, 20}, true)
         tinsert(instanceButtons, b)
+
         b:GetFontString():ClearAllPoints()
         b:GetFontString():SetPoint("LEFT", 5, 0)
         b:GetFontString():SetPoint("RIGHT", -5, 0)
         b:GetFontString():SetJustifyH("LEFT")
+
+        if not t[1] then
+            b:GetFontString():SetTextColor(.4, .4, .4, 1)
+        end
 
         if last then
             b:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, 1)
@@ -113,20 +130,21 @@ local units = {
 instanceDebuffs:RegisterEvent("PLAYER_ENTERING_WORLD")
 -- instanceDebuffs:RegisterEvent("UNIT_AURA")
 
-local currentInstanceName, currentInstanceID 
 function instanceDebuffs:PLAYER_ENTERING_WORLD()
     if IsInInstance() then
         local name, instanceType, difficultyID, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceID, instanceGroupSize, LfgDungeonID = GetInstanceInfo()
         instanceNameText:SetText("Name: "..name)
         instanceIDText:SetText("ID: "..instanceID)
-        if false then
+        currentInstanceName, currentInstanceID = name, instanceID
+        if DevInstanceDebuffs["instances"][currentInstanceID] and DevInstanceDebuffs["instances"][currentInstanceID][1] then
+            print("UNIT_AURA")
             instanceDebuffs:RegisterEvent("UNIT_AURA")
-            currentInstanceName, currentInstanceID = name, instanceID
             if type(DevInstanceDebuffs[currentInstanceName]) ~= "table" then DevInstanceDebuffs[currentInstanceName] = {} end
         else
             instanceDebuffs:UnregisterEvent("UNIT_AURA")
         end
     else
+        currentInstanceName, currentInstanceID = nil, nil
         instanceNameText:SetText("Name:")
         instanceIDText:SetText("ID:")
         instanceDebuffs:UnregisterEvent("UNIT_AURA")
