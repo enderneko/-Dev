@@ -186,6 +186,7 @@ local debuffButtons = {}
 LoadDebuffs = function(enemyTable)
     wipe(debuffButtons)
     debuffListFrame.scrollFrame:Reset()
+    DevTooltip:Hide()
 
     if not enemyTable then return end
 
@@ -292,7 +293,7 @@ function instanceDebuffs:UNIT_AURA(unit)
             local name, icon, count, debuffType, duration, expirationTime, source, isStealable, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitDebuff(unit, i)
             if not name then break end
 
-            if not unit[source] then
+            if not units[source] then
                 local sourceName = (source and UnitName(source) or "unknown") or "unknown"
                 if type(DevInstanceDebuffs[currentInstanceName][sourceName]) ~= "table" then DevInstanceDebuffs[currentInstanceName][sourceName] = {} end
                 DevInstanceDebuffs[currentInstanceName][sourceName][spellId] = name
