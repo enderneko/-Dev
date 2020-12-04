@@ -218,6 +218,54 @@ function addon:CreateButton(parent, text, buttonColor, size, noBorder, ...)
 end
 
 -----------------------------------------
+-- Button Group
+-----------------------------------------
+function addon:CreateButtonGroup(buttons, onClick, func1, func2, onEnter, onLeave)
+    local function HighlightButton(id)
+        for _, b in pairs(buttons) do
+            if id == b.id then
+                b:SetBackdropColor(unpack(b.hoverColor))
+                b:SetScript("OnEnter", function()
+                    if b.ShowTooltip then b.ShowTooltip(b) end
+                    if onEnter then onEnter(b) end
+                end)
+                b:SetScript("OnLeave", function()
+                    if b.HideTooltip then b.HideTooltip() end
+                    if onLeave then onLeave() end
+                end)
+                if func1 then func1(b.id) end
+            else
+                b:SetBackdropColor(unpack(b.color))
+                b:SetScript("OnEnter", function() 
+                    if b.ShowTooltip then b.ShowTooltip(b) end
+                    b:SetBackdropColor(unpack(b.hoverColor))
+                    if onEnter then onEnter(b) end
+                end)
+                b:SetScript("OnLeave", function() 
+                    if b.HideTooltip then b.HideTooltip() end
+                    b:SetBackdropColor(unpack(b.color))
+                    if onLeave then onLeave() end
+                end)
+                if func2 then func2(b.id) end
+            end
+        end
+    end
+
+    HighlightButton() -- REVIEW:
+    
+    for _, b in pairs(buttons) do
+		b:SetScript("OnClick", function(self, button)
+			HighlightButton(b.id)
+            onClick(b, button)
+        end)
+    end
+    
+    -- buttons.HighlightButton = HighlightButton
+
+    return buttons, HighlightButton
+end
+
+-----------------------------------------
 -- check button
 -----------------------------------------
 function addon:CreateCheckButton(parent, label, color, onClick, ...)

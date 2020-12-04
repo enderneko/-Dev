@@ -28,6 +28,9 @@ end)
 instanceDebuffs:SetScript("OnShow", function()
     LoadInstances()
 end)
+instanceDebuffs:SetScript("OnHide", function()
+    DevTooltip:Hide()
+end)
 
 local title = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
 title:SetPoint("TOP", 0, -3)
@@ -39,6 +42,9 @@ instanceIDText:SetPoint("TOPLEFT", 5, -20)
 
 local instanceNameText = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
 instanceNameText:SetPoint("LEFT", instanceIDText, "RIGHT", 10, 0)
+
+local statusText = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
+statusText:SetPoint("LEFT", instanceNameText, "RIGHT", 10, 0)
 
 local resetBtn = Dev:CreateButton(instanceDebuffs, "Reset", "red", {40, 20})
 resetBtn:SetPoint("TOPRIGHT")
@@ -70,6 +76,9 @@ instanceListFrame:SetPoint("TOPLEFT", addBtn, "BOTTOMLEFT", 0, -5)
 instanceListFrame:SetPoint("BOTTOMRIGHT", instanceDebuffs, "BOTTOMLEFT", 175, 5)
 
 Dev:CreateScrollFrame(instanceListFrame)
+local currentInstanceHighlight = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
+currentInstanceHighlight:SetFrameLevel(10)
+Dev:StylizeFrame(currentInstanceHighlight, {0,0,0,0}, {.2, 1, .2})
 
 local instanceButtons = {}
 LoadInstances = function()
@@ -102,10 +111,14 @@ LoadInstances = function()
         b:RegisterForClicks("AnyUp")
         b:SetScript("OnClick", function(self, button)
             if button == "LeftButton" then
+                currentInstanceHighlight:Hide()
+                currentInstanceHighlight:ClearAllPoints()
                 if IsShiftKeyDown() then
                     DevInstanceDebuffs["trackings"][id] = nil
                     LoadInstances()
                 else
+                    currentInstanceHighlight:Show()
+                    currentInstanceHighlight:SetAllPoints(b)
                     LoadEnemies(DevInstanceDebuffs[t[2]])
                     LoadDebuffs(nil)
                 end
@@ -128,11 +141,16 @@ enemyListFrame:SetPoint("TOPLEFT", instanceListFrame, "TOPRIGHT", 5, 0)
 enemyListFrame:SetPoint("BOTTOMRIGHT", instanceListFrame, "BOTTOMRIGHT", 175, 0)
 
 Dev:CreateScrollFrame(enemyListFrame)
+local currentEnemyHighlight = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
+currentEnemyHighlight:SetFrameLevel(10)
+Dev:StylizeFrame(currentEnemyHighlight, {0,0,0,0}, {.2, 1, .2})
 
 local enemyButtons = {}
 LoadEnemies = function(instanceTable)
     wipe(enemyButtons)
     enemyListFrame.scrollFrame:Reset()
+    currentEnemyHighlight:Hide()
+    currentEnemyHighlight:ClearAllPoints()
 
     if not instanceTable then return end
 
@@ -158,11 +176,15 @@ LoadEnemies = function(instanceTable)
         b:RegisterForClicks("AnyUp")
         b:SetScript("OnClick", function(self, button)
             if button == "LeftButton" then
+                currentEnemyHighlight:Hide()
+                currentEnemyHighlight:ClearAllPoints()
                 if IsShiftKeyDown() then
                     instanceTable[enemy] = nil
                     LoadDebuffs(nil)
                     LoadEnemies(instanceTable)
                 else
+                    currentEnemyHighlight:Show()
+                    currentEnemyHighlight:SetAllPoints(b)
                     LoadDebuffs(t)
                 end
             end
@@ -181,11 +203,16 @@ debuffListFrame:SetPoint("TOPLEFT", enemyListFrame, "TOPRIGHT", 5, 0)
 debuffListFrame:SetPoint("BOTTOMRIGHT", enemyListFrame, "BOTTOMRIGHT", 175, 0)
 
 Dev:CreateScrollFrame(debuffListFrame)
+local currentDebuffHighlight = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
+currentDebuffHighlight:SetFrameLevel(10)
+Dev:StylizeFrame(currentDebuffHighlight, {0,0,0,0}, {.2, 1, .2})
 
 local debuffButtons = {}
 LoadDebuffs = function(enemyTable)
     wipe(debuffButtons)
     debuffListFrame.scrollFrame:Reset()
+    currentDebuffHighlight:Hide()
+    currentDebuffHighlight:ClearAllPoints()
     DevTooltip:Hide()
 
     if not enemyTable then return end
@@ -212,10 +239,14 @@ LoadDebuffs = function(enemyTable)
         b:RegisterForClicks("AnyUp")
         b:SetScript("OnClick", function(self, button)
             if button == "LeftButton" then
+                currentDebuffHighlight:Hide()
+                currentDebuffHighlight:ClearAllPoints()
                 if IsShiftKeyDown() then
                     enemyTable[id] = nil
                     LoadDebuffs(enemyTable)
                 else
+                    currentDebuffHighlight:Show()
+                    currentDebuffHighlight:SetAllPoints(b)
                     LPP:PixelPerfectScale(DevTooltip)
                     DevTooltip:SetOwner(instanceDebuffs, "ANCHOR_NONE")
                     DevTooltip:SetPoint("LEFT", instanceDebuffs, "RIGHT", 1, 0)
@@ -273,10 +304,12 @@ function instanceDebuffs:PLAYER_ENTERING_WORLD()
         instanceNameText:SetText("Name: |cffff5500"..name)
         currentInstanceName, currentInstanceID = name, instanceID
         if DevInstanceDebuffs["trackings"][currentInstanceID] and DevInstanceDebuffs["trackings"][currentInstanceID][1] then
+            statusText:SetText("|cff55ff55TRACKING")
             print("|cffff7700START TRACKING DEBUFFS!")
             instanceDebuffs:RegisterEvent("UNIT_AURA")
             if type(DevInstanceDebuffs[currentInstanceName]) ~= "table" then DevInstanceDebuffs[currentInstanceName] = {} end
         else
+            statusText:SetText("")
             instanceDebuffs:UnregisterEvent("UNIT_AURA")
         end
     else
