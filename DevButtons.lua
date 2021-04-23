@@ -34,7 +34,7 @@ local buttons = {
     -- {"RunScript", "script", "$", nil, true},
     -- {"GetSpellInfo", "script", "print(GetSpellInfo($))", nil, true},
     {"GetInstanceInfo", "script", "print(GetInstanceInfo())"},
-    {"EncounterJournal", "script", "texplore(EncounterJournal)", "TableExplorer"},
+    {"EncounterJournal", "script", "print(EncounterJournal.encounterID, EncounterJournal.instanceID)"},
     {"TableExplorer", "script", "texplore($)", "TableExplorer", true},
     {"InterfaceUsage", "macro", "/iu", "InterfaceUsage"},
     {"APIInterface", "macro", "/apii", "APIInterface"},

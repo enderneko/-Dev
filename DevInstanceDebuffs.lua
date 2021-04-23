@@ -324,13 +324,17 @@ function instanceDebuffs:UNIT_AURA(unit)
     if units[unit] and currentInstanceName and currentInstanceID then
         for i = 1, 40 do
             local name, icon, count, debuffType, duration, expirationTime, source, isStealable, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitDebuff(unit, i)
-            if not name then break end
+            if not (name and spellId) then break end
 
-            if not units[source] then
-                local sourceName = (source and UnitName(source) or "unknown") or "unknown"
-                if type(DevInstanceDebuffs[currentInstanceName][sourceName]) ~= "table" then DevInstanceDebuffs[currentInstanceName][sourceName] = {} end
-                DevInstanceDebuffs[currentInstanceName][sourceName][spellId] = name
+            local sourceName
+            if source and (source == "player" or string.find(source, "party") or string.find(source, "raid")) then
+                sourceName = "PLAYER"
+            else
+                sourceName = (source and UnitName(source) or "UNKNOWN") or "UNKNOWN"
             end
+
+            if type(DevInstanceDebuffs[currentInstanceName][sourceName]) ~= "table" then DevInstanceDebuffs[currentInstanceName][sourceName] = {} end
+            DevInstanceDebuffs[currentInstanceName][sourceName][spellId] = name
         end
     end
 end

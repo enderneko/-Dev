@@ -2,7 +2,7 @@
 ## Title: |cFFFF3030DevTools|r
 ## Version: 1
 ## Author: 篠崎
-## SavedVariables: DevDB,DevInstanceDebuffs
+## SavedVariables: DevDB,DevInstanceDebuffs,DevInstanceList
 
 Libs\LoadLibs.xml
 
