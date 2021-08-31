@@ -21,11 +21,13 @@ local escapeSequences = {
 
 --{name/addonName, type, action, dependOnAddon, hasEditBox}
 local buttons = {
+    {"Abstract data", "script", "texplore(\"Abstract\", Abstract.data, 10)", "Abstract"},
+    {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract"},
     {"wipe CellDB", "script", "CellDB=nil;ReloadUI()", "Cell"},
-    {"CellDB debuffs", "script", "texplore(CellDB[\"raidDebuffs\"])", "TableExplorer"},
+    -- {"CellDB debuffs", "script", "texplore(CellDB[\"raidDebuffs\"])", "TableExplorer"},
     -- {"Cell.unitButtons", "script", "texplore(Cell.unitButtons)", "Cell"},
     -- {"CellDB indicators", "script", "texplore(Cell.vars.currentLayoutTable.indicators)", "Cell"},
-    {"Invite", "macro", "/invite Programming-影之哀伤"},
+    {"Invite", "macro", "/invite Programming-影之哀伤\n/invite Luascript-影之哀伤"},
 
     -- general ------------------------
     {"|cff77ff77ReloadUI", "script", "ReloadUI()"},
