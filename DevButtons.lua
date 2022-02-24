@@ -36,7 +36,11 @@ local buttons = {
     -- {"RunScript", "script", "$", nil, true},
     -- {"GetSpellInfo", "script", "print(GetSpellInfo($))", nil, true},
     {"GetInstanceInfo", "script", "print(GetInstanceInfo())"},
-    {"EncounterJournal", "script", "print(EncounterJournal.encounterID, EncounterJournal.instanceID)"},
+    {"EncounterJournal", "function", function()
+        if not IsAddOnLoaded("Blizzard_EncounterJournal") then LoadAddOn("Blizzard_EncounterJournal") end
+        ShowUIPanel(EncounterJournal)
+        print("encounterID:", EncounterJournal.encounterID, "instanceID:", EncounterJournal.instanceID)
+    end},
     {"TableExplorer", "script", "texplore($)", "TableExplorer", true},
     {"InterfaceUsage", "macro", "/iu", "InterfaceUsage"},
     {"APIInterface", "macro", "/apii", "APIInterface"},
@@ -46,11 +50,11 @@ local buttons = {
     {"ViragDevTool", "macro", "/vdt", "ViragDevTool"},
     {"WowLua" ,"macro", "/wowlua", "WowLua"},
     {"TableViewer" ,"function", function(t)
-        DevTable = nil
-        RunScript("DevTable="..t)
-        if type(DevTable) == "table" then
+        DevTableViewerTable = nil
+        RunScript("DevTableViewerTable="..t)
+        if type(DevTableViewerTable) == "table" then
             local text = ""
-            for k, v in pairs(DevTable) do
+            for k, v in pairs(DevTableViewerTable) do
                 k = tostring(k)
                 v = tostring(v)
                 k = k:gsub( "[%z\1-\31\"\\|\127-\255]", escapeSequences )
@@ -60,6 +64,9 @@ local buttons = {
             Dev.dialog:SetText(text)
             Dev.dialog:Show()
         end
+    end, nil, true},
+    {"TableSaver" ,"function", function(t)
+        RunScript("DevTableSaver="..t)
     end, nil, true},
 }
 
@@ -157,7 +164,11 @@ function eventFrame:PLAYER_ENTERING_WORLD()
                 end
 
                 b:SetScript("OnClick", function()
-                    bAction(b.eb:GetText())
+                    if b.eb then
+                        bAction(b.eb:GetText())
+                    else
+                        bAction()
+                    end
                 end)
             end
         else

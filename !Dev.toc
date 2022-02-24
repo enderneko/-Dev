@@ -1,8 +1,8 @@
-## Interface: 90000
+## Interface: 90200
 ## Title: |cFFFF3030DevTools|r
 ## Version: 1
 ## Author: 篠崎
-## SavedVariables: DevDB,DevInstanceDebuffs,DevInstanceList
+## SavedVariables: DevDB,DevInstanceDebuffs,DevInstanceList,DevTableSaver
 
 Libs\LoadLibs.xml
 
@@ -13,3 +13,5 @@ DevMain.lua
 
 DevInstanceDebuffs.lua
 DevButtons.lua
+
+DND.lua
