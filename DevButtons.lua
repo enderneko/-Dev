@@ -22,8 +22,8 @@ local escapeSequences = {
 --{name/addonName, type, action, dependOnAddon, hasEditBox}
 local buttons = {
     {"Abstract data", "script", "texplore(\"Abstract\", Abstract.data, 10)", "Abstract"},
-    {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract"},
-    {"wipe CellDB", "script", "CellDB=nil;ReloadUI()", "Cell"},
+    {"|cffff9999wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract"},
+    {"|cffff9999wipe CellDB", "script", "CellDB=nil;ReloadUI()", "Cell"},
     -- {"CellDB debuffs", "script", "texplore(CellDB[\"raidDebuffs\"])", "TableExplorer"},
     -- {"Cell.unitButtons", "script", "texplore(Cell.unitButtons)", "Cell"},
     -- {"CellDB indicators", "script", "texplore(Cell.vars.currentLayoutTable.indicators)", "Cell"},
@@ -35,21 +35,23 @@ local buttons = {
     {"|cff77ffffcollectgarbage", "script", "collectgarbage(\"collect\")"},
     -- {"RunScript", "script", "$", nil, true},
     -- {"GetSpellInfo", "script", "print(GetSpellInfo($))", nil, true},
-    {"GetInstanceInfo", "script", "print(GetInstanceInfo())"},
-    {"EncounterJournal", "function", function()
+    {"|cffffff77GetInstanceInfo", "script", "print(GetInstanceInfo())"},
+    {"|cffffff77EncounterJournal", "function", function()
         if not IsAddOnLoaded("Blizzard_EncounterJournal") then LoadAddOn("Blizzard_EncounterJournal") end
         ShowUIPanel(EncounterJournal)
         print("encounterID:", EncounterJournal.encounterID, "instanceID:", EncounterJournal.instanceID)
     end},
-    {"TableExplorer", "script", "texplore($)", "TableExplorer", true},
     {"InterfaceUsage", "macro", "/iu", "InterfaceUsage"},
     {"APIInterface", "macro", "/apii", "APIInterface"},
     {"TextureViewer", "macro", "/texview", "TextureViewer"},
     {"TextureAtlasViewer", "macro", "/tav", "TextureAtlasViewer"},
     {"TextureBrowser", "macro", "/tb", "TextureBrowser"},
+    {"|cffffff77EventTrace", "macro", "/eventtrace"},
     {"ViragDevTool", "macro", "/vdt", "ViragDevTool"},
     {"WowLua" ,"macro", "/wowlua", "WowLua"},
+    {"TableExplorer", "script", "texplore($)", "TableExplorer", true},
     {"TableViewer" ,"function", function(t)
+        if not t or t == "" then return end
         DevTableViewerTable = nil
         RunScript("DevTableViewerTable="..t)
         if type(DevTableViewerTable) == "table" then
