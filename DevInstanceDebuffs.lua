@@ -25,8 +25,13 @@ instanceDebuffs:SetScript("OnDragStop", function()
     instanceDebuffs:StopMovingOrSizing()
     LPP:PixelPerfectPoint(instanceDebuffs)
 end)
+
+local init
 instanceDebuffs:SetScript("OnShow", function()
-    LoadInstances()
+    if not init then
+        init = true
+        LoadInstances()
+    end
 end)
 instanceDebuffs:SetScript("OnHide", function()
     DevTooltip:Hide()
@@ -46,7 +51,8 @@ instanceNameText:SetPoint("LEFT", instanceIDText, "RIGHT", 10, 0)
 local statusText = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
 statusText:SetPoint("LEFT", instanceNameText, "RIGHT", 10, 0)
 
-local resetBtn = Dev:CreateButton(instanceDebuffs, "Reset", "red", {40, 20})
+-- reset
+local resetBtn = Dev:CreateButton(instanceDebuffs, "Reset", "red", {40, 20}, false, false, "Shift + Left-Click to reset & reload")
 resetBtn:SetPoint("TOPRIGHT")
 resetBtn:SetScript("OnClick", function()
     if IsShiftKeyDown() then
@@ -55,6 +61,7 @@ resetBtn:SetScript("OnClick", function()
     end
 end)
 
+-- aadd & track
 local addBtn = Dev:CreateButton(instanceDebuffs, "Add Current Instance", "red", {170, 20})
 addBtn:SetPoint("TOPLEFT", 5, -40)
 addBtn:SetScript("OnClick", function()
@@ -66,6 +73,10 @@ addBtn:SetScript("OnClick", function()
         end
     end
 end)
+
+local tips = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
+tips:SetPoint("LEFT", addBtn, "RIGHT", 5, 0)
+tips:SetText("[Right-Click] track/untrack, [Shift+Left-Click] delete")
 
 -------------------------------------------------
 -- instance list
@@ -81,6 +92,7 @@ currentInstanceHighlight:SetFrameLevel(10)
 Dev:StylizeFrame(currentInstanceHighlight, {0,0,0,0}, {.2, 1, .2})
 
 local instanceButtons = {}
+local selectedInstance
 LoadInstances = function()
     wipe(instanceButtons)
     instanceListFrame.scrollFrame:Reset()
@@ -113,18 +125,39 @@ LoadInstances = function()
             if button == "LeftButton" then
                 currentInstanceHighlight:Hide()
                 currentInstanceHighlight:ClearAllPoints()
-                if IsShiftKeyDown() then
+                if IsShiftKeyDown() then -- delete
                     DevInstanceDebuffs["trackings"][id] = nil
                     LoadInstances()
-                else
+                    if selectedInstance == id then
+                        LoadEnemies(nil)
+                        LoadDebuffs(nil)
+                    end
+                else -- show enemies
+                    selectedInstance = id
                     currentInstanceHighlight:Show()
                     currentInstanceHighlight:SetAllPoints(b)
-                    LoadEnemies(DevInstanceDebuffs[t[2]])
+                    LoadEnemies(DevInstanceDebuffs["trackings"][id][3])
                     LoadDebuffs(nil)
                 end
-            elseif button == "RightButton" then
+            elseif button == "RightButton" then -- track/untrack
                 t[1] = not t[1]
-                LoadInstances()
+                if t[1] then
+                    b:GetFontString():SetTextColor(1, 1, 1, 1)
+                else
+                    b:GetFontString():SetTextColor(0.4, 0.4, 0.4, 1)
+                end
+
+                if id == currentInstanceID then
+                    if t[1] then
+                        statusText:SetText("|cff55ff55TRACKING")
+                        print("|cff77ff00START TRACKING DEBUFFS!")
+                        instanceDebuffs:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+                    else
+                        statusText:SetText("")
+                        print("|cffff7700STOP TRACKING DEBUFFS!")
+                        instanceDebuffs:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+                    end
+                end
             end
         end)
     end
@@ -219,7 +252,8 @@ LoadDebuffs = function(enemyTable)
 
     local last
     for id, name in pairs(enemyTable) do
-        local b = Dev:CreateButton(debuffListFrame.scrollFrame.content, id.." "..name, "red-hover", {20, 20}, true)
+        local icon = select(3, GetSpellInfo(id))
+        local b = Dev:CreateButton(debuffListFrame.scrollFrame.content, "|T"..icon..":0|t "..id.." "..name, "red-hover", {20, 20}, true)
         tinsert(debuffButtons, b)
 
         b:GetFontString():ClearAllPoints()
@@ -247,7 +281,6 @@ LoadDebuffs = function(enemyTable)
                 else
                     currentDebuffHighlight:Show()
                     currentDebuffHighlight:SetAllPoints(b)
-                    LPP:PixelPerfectScale(DevTooltip)
                     DevTooltip:SetOwner(instanceDebuffs, "ANCHOR_NONE")
                     DevTooltip:SetPoint("LEFT", instanceDebuffs, "RIGHT", 1, 0)
                     DevTooltip:SetHyperlink("spell:"..id)
@@ -295,7 +328,7 @@ local units = {
 }
 
 instanceDebuffs:RegisterEvent("PLAYER_ENTERING_WORLD")
--- instanceDebuffs:RegisterEvent("UNIT_AURA")
+-- instanceDebuffs:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 
 function instanceDebuffs:PLAYER_ENTERING_WORLD()
     if IsInInstance() then
@@ -305,41 +338,54 @@ function instanceDebuffs:PLAYER_ENTERING_WORLD()
         currentInstanceName, currentInstanceID = name, instanceID
         if DevInstanceDebuffs["trackings"][currentInstanceID] and DevInstanceDebuffs["trackings"][currentInstanceID][1] then
             statusText:SetText("|cff55ff55TRACKING")
-            print("|cffff7700START TRACKING DEBUFFS!")
-            instanceDebuffs:RegisterEvent("UNIT_AURA")
-            if type(DevInstanceDebuffs[currentInstanceName]) ~= "table" then DevInstanceDebuffs[currentInstanceName] = {} end
+            print("|cff77ff00START TRACKING DEBUFFS!")
+            instanceDebuffs:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+            if type(DevInstanceDebuffs["trackings"][currentInstanceID][3]) ~= "table" then DevInstanceDebuffs["trackings"][currentInstanceID][3] = {} end
         else
             statusText:SetText("")
-            instanceDebuffs:UnregisterEvent("UNIT_AURA")
+            instanceDebuffs:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
         end
     else
         currentInstanceName, currentInstanceID = nil, nil
         instanceNameText:SetText("Name:")
         instanceIDText:SetText("ID:")
-        instanceDebuffs:UnregisterEvent("UNIT_AURA")
+        instanceDebuffs:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
     end
 end
 
-function instanceDebuffs:UNIT_AURA(unit)
-    if units[unit] and currentInstanceName and currentInstanceID then
-        for i = 1, 40 do
-            local name, icon, count, debuffType, duration, expirationTime, source, isStealable, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitDebuff(unit, i)
-            if not (name and spellId) then break end
+-- https://wowpedia.fandom.com/wiki/UnitFlag
+local OBJECT_AFFILIATION_MINE = 0x00000001
+local OBJECT_AFFILIATION_PARTY = 0x00000002
+local OBJECT_AFFILIATION_RAID = 0x00000004
+local OBJECT_REACTION_HOSTILE = 0x00000040
+local OBJECT_REACTION_NEUTRAL = 0x00000020
 
-            local sourceName
-            if source and (source == "player" or string.find(source, "party") or string.find(source, "raid")) then
-                sourceName = "PLAYER"
-            else
-                sourceName = (source and UnitName(source) or "UNKNOWN") or "UNKNOWN"
-            end
-
-            if type(DevInstanceDebuffs[currentInstanceName][sourceName]) ~= "table" then DevInstanceDebuffs[currentInstanceName][sourceName] = {} end
-            DevInstanceDebuffs[currentInstanceName][sourceName][spellId] = name
-        end
-    end
+local function IsFriend(unitFlags)
+    if not unitFlags then return false end
+    return (bit.band(unitFlags, OBJECT_AFFILIATION_MINE) ~= 0) or (bit.band(unitFlags, OBJECT_AFFILIATION_RAID) ~= 0) or (bit.band(unitFlags, OBJECT_AFFILIATION_PARTY) ~= 0)
 end
 
+local function IsEnemy(unitFlags)
+    if not unitFlags then return false end
+    return (bit.band(unitFlags, OBJECT_REACTION_HOSTILE) ~= 0) or (bit.band(unitFlags, OBJECT_REACTION_NEUTRAL) ~= 0)
+end
+
+function instanceDebuffs:COMBAT_LOG_EVENT_UNFILTERED(...)
+    local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, spellSchool, auraType, amount = ...
+    if event ~= "SPELL_AURA_APPLIED" and auraType ~= "DEBUFF" then
+        return
+    end
+
+    if IsEnemy(sourceFlags) and IsFriend(destFlags) and currentInstanceName and currentInstanceID then
+        if type(DevInstanceDebuffs["trackings"][currentInstanceID][3][sourceName]) ~= "table" then DevInstanceDebuffs["trackings"][currentInstanceID][3][sourceName] = {} end
+        DevInstanceDebuffs["trackings"][currentInstanceID][3][sourceName][spellId] = spellName
+    end
+end
 
 instanceDebuffs:SetScript("OnEvent", function(self, event, ...)
-    self[event](self, ...)
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        self:COMBAT_LOG_EVENT_UNFILTERED(CombatLogGetCurrentEventInfo())
+    else
+        self[event](self, ...)
+    end
 end)

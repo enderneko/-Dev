@@ -125,7 +125,7 @@ function eventFrame:PLAYER_ENTERING_WORLD()
     local last, numEB = nil, 0
     for i, t in pairs(buttons) do
         local bName, bType, bAction, bDependOnAddon, bHasEditBox = unpack(t)
-        local b = Dev:CreateButton(devButtonsFrame, bName, "red", {BUTTON_WIDTH, BUTTON_HEIGHT})
+        local b = Dev:CreateButton(devButtonsFrame, bName, "red", {BUTTON_WIDTH, BUTTON_HEIGHT}, false, true)
 
         if not bDependOnAddon or IsAddOnLoaded(bDependOnAddon) then
             if bType == "macro" then
@@ -197,6 +197,10 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 end)
 
 local devButtonsBtn = Dev:CreateMainButton(1, 461790, function(self)
+    if InCombatLockdown() then
+        return
+    end
+
     DevDB["showDevButtons"] = not DevDB["showDevButtons"]
     if DevDB["showDevButtons"] then
         self.tex:SetDesaturated(false)

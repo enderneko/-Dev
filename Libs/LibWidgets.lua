@@ -56,53 +56,33 @@ end
 -----------------------------------------
 -- Tooltip
 -----------------------------------------
-local tooltip = CreateFrame("GameTooltip", addonName .. "Tooltip", nil, "GameTooltipTemplate,BackdropTemplate")
-tooltip:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1})
-tooltip:SetBackdropColor(.1, .1, .1, .8)
-tooltip:SetBackdropBorderColor(0, 0, 0, 1)
-tooltip:SetOwner(UIParent, "ANCHOR_NONE")
--- LPP:PixelPerfectScale(tooltip)
-tooltip:SetScript("OnTooltipCleared", function()
-	-- reset border color
-	tooltip:SetBackdropBorderColor(0, 0, 0, 1)
-end)
-
-tooltip:SetScript("OnTooltipSetItem", function()
-	-- color border with item quality color
-	tooltip:SetBackdropBorderColor(_G[name .. "TextLeft1"]:GetTextColor())
-end)
-
-tooltip:SetScript("OnHide", function()
-	-- SetX with invalid data may or may not clear the tooltip's contents.
-	tooltip:ClearLines()
-	-- prepare for the next SetX()
-	if tooltip.shoppingTooltips then
-		for _, tip in pairs(tooltip.shoppingTooltips) do
-			tip:Hide()
-		end
-	end
-end)
-
 local function SetTooltip(widget, anchor, x, y, ...)
 	local tooltips = {...}
 
 	if #tooltips ~= 0 then
 		widget:HookScript("OnEnter", function()
-			tooltip:SetOwner(widget, anchor or "ANCHOR_TOP", x or 0, y or 0)
-            tooltip:AddLine(tooltips[1])
+			DevTooltip:SetOwner(widget, anchor or "ANCHOR_TOP", x or 0, y or 0)
+            DevTooltip:AddLine(tooltips[1])
             for i = 2, #tooltips do
-                tooltip:AddLine("|cffffffff" .. tooltips[i])
+                DevTooltip:AddLine("|cffffffff" .. tooltips[i])
             end
-            tooltip:Show()
+            DevTooltip:Show()
 		end)
 		widget:HookScript("OnLeave", function()
-			tooltip:Hide()
+			DevTooltip:Hide()
 		end)
 	end
 end
 
-function addon:CreateButton(parent, text, buttonColor, size, noBorder, ...)
-	local b = CreateFrame("Button", nil, parent, "SecureActionButtonTemplate,BackdropTemplate")
+function addon:CreateButton(parent, text, buttonColor, size, noBorder, isSecure, ...)
+    local template
+    if isSecure then
+        template = "SecureActionButtonTemplate,BackdropTemplate"
+    else
+        template = "BackdropTemplate"
+    end
+
+	local b = CreateFrame("Button", nil, parent, template)
 	if parent then b:SetFrameLevel(parent:GetFrameLevel()+1) end
 	b:SetText(text)
 	b:SetSize(unpack(size))

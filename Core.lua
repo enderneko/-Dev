@@ -1,4 +1,5 @@
 local addonName, Dev = ...
+local LPP = LibStub:GetLibrary("LibPixelPerfect")
 
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("ADDON_LOADED")
@@ -16,6 +17,7 @@ function eventFrame:ADDON_LOADED(arg1)
         end
 
         Dev:Fire("UpdateVisibility")
+        LPP:PixelPerfectScale(DevTooltip)
     end
 end
 
