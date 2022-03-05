@@ -132,6 +132,10 @@ LoadInstances = function()
                         LoadEnemies(nil)
                         LoadDebuffs(nil)
                     end
+                    if id == currentInstanceID then
+                        statusText:SetText("")
+                        instanceDebuffs:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+                    end
                 else -- show enemies
                     selectedInstance = id
                     currentInstanceHighlight:Show()
