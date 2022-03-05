@@ -349,6 +349,7 @@ function instanceDebuffs:PLAYER_ENTERING_WORLD()
         currentInstanceName, currentInstanceID = nil, nil
         instanceNameText:SetText("Name:")
         instanceIDText:SetText("ID:")
+        statusText:SetText("")
         instanceDebuffs:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
     end
 end
