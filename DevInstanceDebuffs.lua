@@ -38,7 +38,7 @@ end)
 
 local title = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
 title:SetPoint("TOP", 0, -3)
-title:SetText("Instance Debuffs")
+title:SetText("Instance Debuffs Collector")
 title:SetTextColor(.9, .9, .1)
 
 local instanceIDText = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
@@ -491,13 +491,20 @@ function instanceDebuffs:COMBAT_LOG_EVENT_UNFILTERED(...)
         end
         DevInstanceDebuffs["trackings"][currentInstanceID][3][sourceName][spellId] = spellName
         
-        -- save encounter-spell
         if currentEncounterID and currentEncounterName then
+            -- save encounter-spell
             local currentEncounter = "|cff27ffff"..currentEncounterID..currentEncounterName
             if type(DevInstanceDebuffs["trackings"][currentInstanceID][3][currentEncounter]) ~= "table" then
                 DevInstanceDebuffs["trackings"][currentInstanceID][3][currentEncounter] = {}
             end
             DevInstanceDebuffs["trackings"][currentInstanceID][3][currentEncounter][spellId] = spellName
+        else
+            -- save mobs-spell
+            local index = "|cff27ffff* MOBS"
+            if type(DevInstanceDebuffs["trackings"][currentInstanceID][3][index]) ~= "table" then
+                DevInstanceDebuffs["trackings"][currentInstanceID][3][index] = {}
+            end
+            DevInstanceDebuffs["trackings"][currentInstanceID][3][index][spellId] = spellName
         end
     end
 end
