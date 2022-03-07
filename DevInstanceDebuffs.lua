@@ -2,7 +2,7 @@ local _, Dev = ...
 local P = Dev.pixelPerfectFuncs
 
 local currentInstanceName, currentInstanceID
-local LoadInstances, LoadEnemies, LoadDebuffs
+local LoadInstances, LoadEnemies, LoadDebuffs, Export
 
 local instanceDebuffs = CreateFrame("Frame", "DevInstanceDebuffsFrame", DevMainFrame, "BackdropTemplate")
 instanceDebuffs:Hide()
@@ -32,9 +32,9 @@ instanceDebuffs:SetScript("OnShow", function()
         LoadInstances()
     end
 end)
-instanceDebuffs:SetScript("OnHide", function()
-    DevTooltip:Hide()
-end)
+-- instanceDebuffs:SetScript("OnHide", function()
+--     DevTooltip:Hide()
+-- end)
 
 local title = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
 title:SetPoint("TOP", 0, -3)
@@ -76,7 +76,7 @@ end)
 -- tips
 local tips = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
 tips:SetPoint("LEFT", addBtn, "RIGHT", 5, 0)
-tips:SetText("[Right-Click] track/untrack, [Shift+Left-Click] delete")
+tips:SetText("[Right-Click] track/untrack/export, [Shift-Click] delete")
 
 -------------------------------------------------
 -- instance list
@@ -245,6 +245,8 @@ LoadEnemies = function(instanceTable)
                     currentEnemyHighlight:SetAllPoints(b)
                     LoadDebuffs(instanceTable[enemy])
                 end
+            elseif button == "RightButton" then
+                Export(instanceTable[enemy])
             end
         end)
     end
@@ -306,16 +308,65 @@ LoadDebuffs = function(enemyTable)
                 else
                     currentDebuffHighlight:Show()
                     currentDebuffHighlight:SetAllPoints(b)
-                    DevTooltip:SetOwner(instanceDebuffs, "ANCHOR_NONE")
-                    DevTooltip:SetPoint("LEFT", instanceDebuffs, "RIGHT", 1, 0)
-                    DevTooltip:SetHyperlink("spell:"..id)
-                    DevTooltip:Show()
+                    -- DevTooltip:SetOwner(instanceDebuffs, "ANCHOR_NONE")
+                    -- DevTooltip:SetPoint("LEFT", instanceDebuffs, "RIGHT", 1, 0)
+                    -- DevTooltip:SetHyperlink("spell:"..id)
+                    -- DevTooltip:Show()
+                    Export(id..", -- "..name)
                 end
             end
+        end)
+
+        -- tooltip
+        b:HookScript("OnEnter", function()
+            DevTooltip:SetOwner(instanceDebuffs, "ANCHOR_NONE")
+            DevTooltip:SetPoint("TOPLEFT", b, "TOPRIGHT", 1, 0)
+            DevTooltip:SetHyperlink("spell:"..id)
+            DevTooltip:Show()
+        end)
+
+        b:HookScript("OnLeave", function()
+            DevTooltip:Hide()
         end)
     end
 
     debuffListFrame.scrollFrame:SetContentHeight(20, #debuffButtons, -1)
+end
+
+-------------------------------------------------
+-- export
+-------------------------------------------------
+local exportFrame = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
+Dev:StylizeFrame(exportFrame)
+exportFrame:SetPoint("TOPLEFT", debuffListFrame, "TOPRIGHT", 10, 0)
+exportFrame:SetPoint("BOTTOMRIGHT", debuffListFrame, "BOTTOMRIGHT", 180, 0)
+exportFrame:Hide()
+
+local exportFrameEditBox = Dev:CreateScrollEditBox(exportFrame)
+exportFrameEditBox:SetPoint("TOPLEFT", 5, -5)
+exportFrameEditBox:SetPoint("BOTTOMRIGHT", -5, 5)
+
+exportFrame:SetScript("OnHide", function()
+    exportFrame:Hide()
+end)
+
+local exportFrameCloseBtn = Dev:CreateButton(exportFrame, "Close", "red", {45, 20})
+exportFrameCloseBtn:SetPoint("BOTTOMRIGHT", exportFrame, "TOPRIGHT", 0, -1)
+exportFrameCloseBtn:SetScript("OnClick", function()
+    exportFrame:Hide()
+end)
+
+Export = function(data)
+    exportFrame:Show()
+    if type(data) == "string" then
+        exportFrameEditBox:SetText(data)
+    elseif type(data) == "table" then
+        local result = ""
+        for id, name in pairs(data) do
+            result = result..id..", -- "..name.."\n"
+        end
+        exportFrameEditBox:SetText(result)
+    end
 end
 
 -------------------------------------------------
