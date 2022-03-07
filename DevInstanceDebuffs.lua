@@ -377,11 +377,12 @@ end
 
 function instanceDebuffs:COMBAT_LOG_EVENT_UNFILTERED(...)
     local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, spellSchool, auraType, amount = ...
-    if event ~= "SPELL_AURA_APPLIED" and auraType ~= "DEBUFF" then
+    if event ~= "SPELL_AURA_APPLIED" or auraType ~= "DEBUFF" then
         return
     end
 
-    if IsEnemy(sourceFlags) and IsFriend(destFlags) and currentInstanceName and currentInstanceID then
+    if IsEnemy(sourceFlags) and IsFriend(destFlags) and currentInstanceName and currentInstanceID and spellId then
+        if not sourceName then sourceName = "UNKNOWN" end
         if type(DevInstanceDebuffs["trackings"][currentInstanceID][3][sourceName]) ~= "table" then DevInstanceDebuffs["trackings"][currentInstanceID][3][sourceName] = {} end
         DevInstanceDebuffs["trackings"][currentInstanceID][3][sourceName][spellId] = spellName
     end
