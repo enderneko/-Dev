@@ -52,7 +52,7 @@ local statusText = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NO
 statusText:SetPoint("LEFT", instanceNameText, "RIGHT", 10, 0)
 
 -- reset
-local resetBtn = Dev:CreateButton(instanceDebuffs, "Reset", "red", {40, 20}, false, false, "Shift + Left-Click to reset & reload")
+local resetBtn = Dev:CreateButton(instanceDebuffs, "Reset", "red", {45, 20}, false, false, "Shift + Left-Click to reset & reload")
 resetBtn:SetPoint("TOPRIGHT")
 resetBtn:SetScript("OnClick", function()
     if IsShiftKeyDown() then
@@ -67,7 +67,7 @@ addBtn:SetPoint("TOPLEFT", 5, -40)
 addBtn:SetScript("OnClick", function()
     if currentInstanceName and currentInstanceID then
         if not DevInstanceDebuffs["trackings"][currentInstanceID] then
-            DevInstanceDebuffs["trackings"][currentInstanceID] = {true, currentInstanceName}
+            DevInstanceDebuffs["trackings"][currentInstanceID] = {true, currentInstanceName, {}}
             LoadInstances()
             instanceDebuffs:PLAYER_ENTERING_WORLD()
         end
@@ -344,7 +344,6 @@ function instanceDebuffs:PLAYER_ENTERING_WORLD()
             statusText:SetText("|cff55ff55TRACKING")
             print("|cff77ff00START TRACKING DEBUFFS!")
             instanceDebuffs:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-            if type(DevInstanceDebuffs["trackings"][currentInstanceID][3]) ~= "table" then DevInstanceDebuffs["trackings"][currentInstanceID][3] = {} end
         else
             statusText:SetText("")
             instanceDebuffs:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
