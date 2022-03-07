@@ -11,6 +11,7 @@ idTip.lua
 
 DevMain.lua
 
+DevConfig.lua
 DevInstanceDebuffs.lua
 DevButtons.lua
 

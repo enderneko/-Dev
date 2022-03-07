@@ -1,5 +1,5 @@
 local _, Dev = ...
-local LPP = LibStub:GetLibrary("LibPixelPerfect")
+local P = Dev.pixelPerfectFuncs
 
 local MACRO_PREFIX = "!Dev-" --! if use _ in macro name, icon can't be saved. why?
 local BUTTON_WIDTH = 100
@@ -72,8 +72,7 @@ local buttons = {
     end, nil, true},
 }
 
-local devButtonsFrame = CreateFrame("Frame", "DevButtonsFrame", nil, "BackdropTemplate")
-LPP:PixelPerfectScale(devButtonsFrame)
+local devButtonsFrame = CreateFrame("Frame", "DevButtonsFrame", DevMainFrame, "BackdropTemplate")
 devButtonsFrame:Hide()
 devButtonsFrame:SetPoint("LEFT", 100, 0)
 devButtonsFrame:SetFrameStrata("LOW")
@@ -90,10 +89,10 @@ devButtonsFrame:SetScript("OnDragStart", function()
 end)
 devButtonsFrame:SetScript("OnDragStop", function()
     devButtonsFrame:StopMovingOrSizing()
-    LPP:PixelPerfectPoint(devButtonsFrame)
+    P:PixelPerfectPoint(devButtonsFrame)
 end)
 devButtonsFrame:SetScript("OnShow", function()
-    -- LPP:PixelPerfectPoint(devButtonsFrame)
+    -- P:PixelPerfectPoint(devButtonsFrame)
 end)
 
 local title = devButtonsFrame:CreateFontString(nil, "OVERLAY", "DEV_FONT_TITLE")
@@ -198,7 +197,10 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 	self[event](self, ...)
 end)
 
-local devButtonsBtn = Dev:CreateMainButton(1, 461790, function(self)
+-------------------------------------------------
+-- main button
+-------------------------------------------------
+local devButtonsBtn = Dev:CreateMainButton(2, 461790, function(self)
     if InCombatLockdown() then
         return
     end

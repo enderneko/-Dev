@@ -1,8 +1,7 @@
 local _, Dev = ...
-local LPP = LibStub:GetLibrary("LibPixelPerfect")
+local P = Dev.pixelPerfectFuncs
 
 local devMainFrame = CreateFrame("Frame", "DevMainFrame", nil, "BackdropTemplate")
-LPP:PixelPerfectScale(devMainFrame)
 devMainFrame:Hide()
 devMainFrame:SetPoint("TOP")
 devMainFrame:SetFrameStrata("HIGH")
@@ -19,10 +18,10 @@ devMainFrame:SetScript("OnDragStart", function()
 end)
 devMainFrame:SetScript("OnDragStop", function()
     devMainFrame:StopMovingOrSizing()
-    LPP:PixelPerfectPoint(devMainFrame)
+    P:PixelPerfectPoint(devMainFrame)
 end)
 devMainFrame:SetScript("OnShow", function()
-    LPP:PixelPerfectPoint(devMainFrame)
+    P:PixelPerfectPoint(devMainFrame)
 end)
 
 -------------------------------------------------
@@ -67,7 +66,7 @@ function Dev:CreateMainButton(index, icon, func)
     end)
     b:SetScript("OnDragStop", function()
         devMainFrame:StopMovingOrSizing()
-        LPP:PixelPerfectPoint(devMainFrame)
+        P:PixelPerfectPoint(devMainFrame)
     end)
     UpdateDevMain()
 
@@ -75,7 +74,17 @@ function Dev:CreateMainButton(index, icon, func)
 end
 
 -------------------------------------------------
--- init buttons
+-- functions
 -------------------------------------------------
--- CreateButton(461790, Dev.ShowDevButtons)
--- CreateButton(254886, Dev.ShowInstanceDebuffs)
+local function UpdateVisibility()
+    if InCombatLockdown() then
+        return
+    end
+
+    if DevDB["show"] then
+        devMainFrame:Show()
+    else
+        devMainFrame:Hide()
+    end
+end
+Dev:RegisterCallback("UpdateVisibility", "DevMain_UpdateVisibility", UpdateVisibility)

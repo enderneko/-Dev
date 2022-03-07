@@ -1,5 +1,24 @@
 local addonName, addon = ...
--- local LPP = LibStub:GetLibrary("LibPixelPerfect")
+local P = addon.pixelPerfectFuncs
+
+-----------------------------------------
+-- colors
+-----------------------------------------
+local colors = {
+    grey = {s="|cFFB2B2B2", t={.7, .7, .7}},
+    yellow = {s="|cFFFFD100", t= {1, .82, 0}},
+    orange = {s="|cFFFFC0CB", t= {1, .65, 0}},
+    firebrick = {s="|cFFFF3030", t={1, .19, .19}},
+    skyblue = {s="|cFF00CCFF", t={0, .8, 1}},
+    chartreuse = {s="|cFF80FF00", t={.5, 1, 0}},
+}
+
+local class = select(2, UnitClass("player"))
+local classColor = {s="|cCCB2B2B2", t={.7, .7, .7}}
+if class then
+    classColor.t[1], classColor.t[2], classColor.t[3], classColor.s = GetClassColor(class)
+    classColor.s = "|c"..classColor.s
+end
 
 -----------------------------------------
 -- font
@@ -28,50 +47,43 @@ font_title:SetJustifyH("CENTER")
 -----------------------------------------
 -- frame
 -----------------------------------------
-local class = select(2, UnitClass("player"))
-local classColor = {s="|cCCB2B2B2", t={.7, .7, .7}}
-if class then
-	classColor.t[1], classColor.t[2], classColor.t[3], classColor.s = GetClassColor(class)
-	classColor.s = "|c"..classColor.s
-end
-
 function addon:StylizeFrame(frame, color, borderColor)
-	if not color then color = {.1, .1, .1, .9} end
-	if not borderColor then borderColor = {0, 0, 0, 1} end
+    if not color then color = {.1, .1, .1, .9} end
+    if not borderColor then borderColor = {0, 0, 0, 1} end
 
-	frame:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1})
+    frame:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1})
     frame:SetBackdropColor(unpack(color))
-	frame:SetBackdropBorderColor(unpack(borderColor))
+    frame:SetBackdropBorderColor(unpack(borderColor))
 end
 
 function addon:CreateFrame(name, parent, width, height, isTransparent)
-	local f = CreateFrame("Frame", name, parent, "BackdropTemplate")
-	f:Hide()
-	if not isTransparent then addon:StylizeFrame(f) end
-	f:EnableMouse(true)
-	if width and height then f:SetSize(width, height) end
-	return f
+    local f = CreateFrame("Frame", name, parent, "BackdropTemplate")
+    f:Hide()
+    if not isTransparent then addon:StylizeFrame(f) end
+    f:EnableMouse(true)
+    if width and height then f:SetSize(width, height) end
+    return f
 end
 
 -----------------------------------------
 -- Tooltip
 -----------------------------------------
 local function SetTooltip(widget, anchor, x, y, ...)
-	local tooltips = {...}
+    local tooltips = {...}
 
-	if #tooltips ~= 0 then
-		widget:HookScript("OnEnter", function()
-			DevTooltip:SetOwner(widget, anchor or "ANCHOR_TOP", x or 0, y or 0)
+    if #tooltips ~= 0 then
+        widget:HookScript("OnEnter", function()
+            DevTooltip:SetOwner(widget, anchor or "ANCHOR_TOP", x or 0, y or 0)
             DevTooltip:AddLine(tooltips[1])
             for i = 2, #tooltips do
                 DevTooltip:AddLine("|cffffffff" .. tooltips[i])
             end
             DevTooltip:Show()
-		end)
-		widget:HookScript("OnLeave", function()
-			DevTooltip:Hide()
-		end)
-	end
+        end)
+        widget:HookScript("OnLeave", function()
+            DevTooltip:Hide()
+        end)
+    end
 end
 
 function addon:CreateButton(parent, text, buttonColor, size, noBorder, isSecure, ...)
@@ -82,119 +94,119 @@ function addon:CreateButton(parent, text, buttonColor, size, noBorder, isSecure,
         template = "BackdropTemplate"
     end
 
-	local b = CreateFrame("Button", nil, parent, template)
-	if parent then b:SetFrameLevel(parent:GetFrameLevel()+1) end
-	b:SetText(text)
-	b:SetSize(unpack(size))
-	
-	local color, hoverColor
-	if buttonColor == "red" then
-		color = {.6, .1, .1, .6}
-		hoverColor = {.6, .1, .1, 1}
-	elseif buttonColor == "red-hover" then
-		color = {.1, .1, .1, 1}
-		hoverColor = {.6, .1, .1, 1}
-	elseif buttonColor == "green" then
-		color = {.1, .6, .1, .6}
-		hoverColor = {.1, .6, .1, 1}
-	elseif buttonColor == "green-hover" then
-		color = {.1, .1, .1, 1}
-		hoverColor = {.1, .6, .1, 1}
-	elseif buttonColor == "cyan" then
-		color = {0, .9, .9, .6}
-		hoverColor = {0, .9, .9, 1}
-	elseif buttonColor == "blue" then
-		color = {0, .5, .8, .6}
-		hoverColor = {0, .5, .8, 1}
-	elseif buttonColor == "blue-hover" then
-		color = {.1, .1, .1, 1}
-		hoverColor = {0, .5, .8, 1}
-	elseif buttonColor == "yellow" then
-		color = {.7, .7, 0, .6}
-		hoverColor = {.7, .7, 0, 1}
-	elseif buttonColor == "yellow-hover" then
-		color = {.1, .1, .1, 1}
-		hoverColor = {.7, .7, 0, 1}
-	elseif buttonColor == "chartreuse" then
-		color = {.5, 1, 0, .6}
-		hoverColor = {.5, 1, 0, .8}
-	elseif buttonColor == "magenta" then
-		color = {.6, .1, .6, .6}
-		hoverColor = {.6, .1, .6, 1}
-	elseif buttonColor == "transparent" then -- drop down item
-		color = {0, 0, 0, 0}
-		hoverColor = {.5, 1, 0, .7}
-	elseif buttonColor == "transparent-white" then -- drop down item
-		color = {0, 0, 0, 0}
-		hoverColor = {.4, .4, .4, .7}
-	elseif buttonColor == "transparent-light" then -- list button
-		color = {0, 0, 0, 0}
-		hoverColor = {.5, 1, 0, .5}
-	elseif buttonColor == "Credit" then
-		color = {.1, .6, .95, .4}
-		hoverColor = {.1, .6, .95, .65}
-	elseif buttonColor == "Award" then
-		color = {.1, .95, .2, .4}
-		hoverColor = {.1, .95, .2, .65}
-	elseif buttonColor == "Penalize" then
-		color = {.95, .17, .2, .4}
-		hoverColor = {.95, .17, .2, .65}
-	elseif buttonColor == "none" then
-		color = {0, 0, 0, 0}
-	else
-		color = {.1, .1, .1, .7}
-		hoverColor = {.5, 1, 0, .6}
-	end
+    local b = CreateFrame("Button", nil, parent, template)
+    if parent then b:SetFrameLevel(parent:GetFrameLevel()+1) end
+    b:SetText(text)
+    b:SetSize(unpack(size))
+    
+    local color, hoverColor
+    if buttonColor == "red" then
+        color = {.6, .1, .1, .6}
+        hoverColor = {.6, .1, .1, 1}
+    elseif buttonColor == "red-hover" then
+        color = {.1, .1, .1, 1}
+        hoverColor = {.6, .1, .1, 1}
+    elseif buttonColor == "green" then
+        color = {.1, .6, .1, .6}
+        hoverColor = {.1, .6, .1, 1}
+    elseif buttonColor == "green-hover" then
+        color = {.1, .1, .1, 1}
+        hoverColor = {.1, .6, .1, 1}
+    elseif buttonColor == "cyan" then
+        color = {0, .9, .9, .6}
+        hoverColor = {0, .9, .9, 1}
+    elseif buttonColor == "blue" then
+        color = {0, .5, .8, .6}
+        hoverColor = {0, .5, .8, 1}
+    elseif buttonColor == "blue-hover" then
+        color = {.1, .1, .1, 1}
+        hoverColor = {0, .5, .8, 1}
+    elseif buttonColor == "yellow" then
+        color = {.7, .7, 0, .6}
+        hoverColor = {.7, .7, 0, 1}
+    elseif buttonColor == "yellow-hover" then
+        color = {.1, .1, .1, 1}
+        hoverColor = {.7, .7, 0, 1}
+    elseif buttonColor == "chartreuse" then
+        color = {.5, 1, 0, .6}
+        hoverColor = {.5, 1, 0, .8}
+    elseif buttonColor == "magenta" then
+        color = {.6, .1, .6, .6}
+        hoverColor = {.6, .1, .6, 1}
+    elseif buttonColor == "transparent" then -- drop down item
+        color = {0, 0, 0, 0}
+        hoverColor = {.5, 1, 0, .7}
+    elseif buttonColor == "transparent-white" then -- drop down item
+        color = {0, 0, 0, 0}
+        hoverColor = {.4, .4, .4, .7}
+    elseif buttonColor == "transparent-light" then -- list button
+        color = {0, 0, 0, 0}
+        hoverColor = {.5, 1, 0, .5}
+    elseif buttonColor == "Credit" then
+        color = {.1, .6, .95, .4}
+        hoverColor = {.1, .6, .95, .65}
+    elseif buttonColor == "Award" then
+        color = {.1, .95, .2, .4}
+        hoverColor = {.1, .95, .2, .65}
+    elseif buttonColor == "Penalize" then
+        color = {.95, .17, .2, .4}
+        hoverColor = {.95, .17, .2, .65}
+    elseif buttonColor == "none" then
+        color = {0, 0, 0, 0}
+    else
+        color = {.1, .1, .1, .7}
+        hoverColor = {.5, 1, 0, .6}
+    end
 
-	-- keep color & hoverColor
-	b.color = color
-	b.hoverColor = hoverColor
+    -- keep color & hoverColor
+    b.color = color
+    b.hoverColor = hoverColor
 
-	local s = b:GetFontString()
-	if s then
-		s:SetWordWrap(false)
-		-- s:SetWidth(size[1])
-		s:SetPoint("LEFT")
-		s:SetPoint("RIGHT")
-	end
-	
-	if noBorder then
-		b:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8"})
-	else
-		b:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1, insets = {left=1,top=1,right=1,bottom=1}})
-	end
-	
-	if buttonColor and string.find(buttonColor, "transparent") then -- drop down item
-		-- b:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8"})
-		if s then
-			s:SetJustifyH("LEFT")
-			s:SetPoint("LEFT", 5, 0)
-			s:SetPoint("RIGHT", -5, 0)
-		end
-		b:SetBackdropBorderColor(1, 1, 1, 0)
-		b:SetPushedTextOffset(0, 0)
-	else
-    	b:SetBackdropBorderColor(0, 0, 0, 1)
-		b:SetPushedTextOffset(0, -1)
-	end
+    local s = b:GetFontString()
+    if s then
+        s:SetWordWrap(false)
+        -- s:SetWidth(size[1])
+        s:SetPoint("LEFT")
+        s:SetPoint("RIGHT")
+    end
+    
+    if noBorder then
+        b:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8"})
+    else
+        b:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1, insets = {left=1,top=1,right=1,bottom=1}})
+    end
+    
+    if buttonColor and string.find(buttonColor, "transparent") then -- drop down item
+        -- b:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8"})
+        if s then
+            s:SetJustifyH("LEFT")
+            s:SetPoint("LEFT", 5, 0)
+            s:SetPoint("RIGHT", -5, 0)
+        end
+        b:SetBackdropBorderColor(1, 1, 1, 0)
+        b:SetPushedTextOffset(0, 0)
+    else
+        b:SetBackdropBorderColor(0, 0, 0, 1)
+        b:SetPushedTextOffset(0, -1)
+    end
 
 
-	b:SetBackdropColor(unpack(color)) 
-	b:SetDisabledFontObject(font_disabled)
+    b:SetBackdropColor(unpack(color)) 
+    b:SetDisabledFontObject(font_disabled)
     b:SetNormalFontObject(font_normal)
-	b:SetHighlightFontObject(font_normal)
-	
-	if buttonColor ~= "none" then
-		b:SetScript("OnEnter", function(self) self:SetBackdropColor(unpack(hoverColor)) end)
-		b:SetScript("OnLeave", function(self) self:SetBackdropColor(unpack(color)) end)
-	end
-	
-	-- click sound
-	b:SetScript("PostClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) end)
+    b:SetHighlightFontObject(font_normal)
+    
+    if buttonColor ~= "none" then
+        b:SetScript("OnEnter", function(self) self:SetBackdropColor(unpack(hoverColor)) end)
+        b:SetScript("OnLeave", function(self) self:SetBackdropColor(unpack(color)) end)
+    end
+    
+    -- click sound
+    b:SetScript("PostClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) end)
 
-	SetTooltip(b, "ANCHOR_TOPLEFT", 0, 3, ...)
+    SetTooltip(b, "ANCHOR_TOPLEFT", 0, 3, ...)
 
-	return b
+    return b
 end
 
 -----------------------------------------
@@ -234,8 +246,8 @@ function addon:CreateButtonGroup(buttons, onClick, func1, func2, onEnter, onLeav
     HighlightButton() -- REVIEW:
     
     for _, b in pairs(buttons) do
-		b:SetScript("OnClick", function(self, button)
-			HighlightButton(b.id)
+        b:SetScript("OnClick", function(self, button)
+            HighlightButton(b.id)
             onClick(b, button)
         end)
     end
@@ -249,158 +261,260 @@ end
 -- check button
 -----------------------------------------
 function addon:CreateCheckButton(parent, label, color, onClick, ...)
-	-- InterfaceOptionsCheckButtonTemplate --> FrameXML\InterfaceOptionsPanels.xml line 19
-	-- OptionsBaseCheckButtonTemplate -->  FrameXML\OptionsPanelTemplates.xml line 10
-	
-	local cb = CreateFrame("CheckButton", nil, parent)
-	cb.onClick = onClick
-	cb:SetScript("OnClick", function(self)
-		PlaySound(self:GetChecked() and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
-		if cb.onClick then cb.onClick(self:GetChecked() and true or false, self) end
-	end)
-	
-	cb.label = cb:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	cb.label:SetText(label)
-	cb.label:SetPoint("LEFT", cb, "RIGHT", 2, 0)
-	if color then
-		cb.label:SetTextColor(color.r, color.g, color.b)
-	end
-	
-	cb:SetSize(16, 16)
-	cb:SetHitRectInsets(0, -cb.label:GetStringWidth(), 0, 0)
-	
-	cb:SetNormalTexture([[Interface\AddOns\GuildRaidAttendance\Media\CheckBox\CheckBox-Normal-16x16]])
-	-- cb:SetPushedTexture()
-	cb:SetHighlightTexture([[Interface\AddOns\GuildRaidAttendance\Media\CheckBox\CheckBox-Highlight-16x16]], "ADD")
-	cb:SetCheckedTexture([[Interface\AddOns\GuildRaidAttendance\Media\CheckBox\CheckBox-Checked-16x16]])
-	cb:SetDisabledCheckedTexture([[Interface\AddOns\GuildRaidAttendance\Media\CheckBox\CheckBox-DisabledChecked-16x16]])
-	
-	SetTooltip(cb, "ANCHOR_TOPLEFT", 0, 0, ...)
+    -- InterfaceOptionsCheckButtonTemplate --> FrameXML\InterfaceOptionsPanels.xml line 19
+    -- OptionsBaseCheckButtonTemplate -->  FrameXML\OptionsPanelTemplates.xml line 10
+    
+    local cb = CreateFrame("CheckButton", nil, parent)
+    cb.onClick = onClick
+    cb:SetScript("OnClick", function(self)
+        PlaySound(self:GetChecked() and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
+        if cb.onClick then cb.onClick(self:GetChecked() and true or false, self) end
+    end)
+    
+    cb.label = cb:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    cb.label:SetText(label)
+    cb.label:SetPoint("LEFT", cb, "RIGHT", 2, 0)
+    if color then
+        cb.label:SetTextColor(color.r, color.g, color.b)
+    end
+    
+    cb:SetSize(16, 16)
+    cb:SetHitRectInsets(0, -cb.label:GetStringWidth(), 0, 0)
+    
+    cb:SetNormalTexture([[Interface\AddOns\GuildRaidAttendance\Media\CheckBox\CheckBox-Normal-16x16]])
+    -- cb:SetPushedTexture()
+    cb:SetHighlightTexture([[Interface\AddOns\GuildRaidAttendance\Media\CheckBox\CheckBox-Highlight-16x16]], "ADD")
+    cb:SetCheckedTexture([[Interface\AddOns\GuildRaidAttendance\Media\CheckBox\CheckBox-Checked-16x16]])
+    cb:SetDisabledCheckedTexture([[Interface\AddOns\GuildRaidAttendance\Media\CheckBox\CheckBox-DisabledChecked-16x16]])
+    
+    SetTooltip(cb, "ANCHOR_TOPLEFT", 0, 0, ...)
 
-	return cb
+    return cb
 end
 
 -----------------------------------------
 -- editbox 2017-06-21 10:19:33
 -----------------------------------------
 function addon:CreateEditBox(parent, width, height, isTransparent, isMultiLine, isNumeric)
-	local eb = CreateFrame("EditBox", nil, parent, "BackdropTemplate")
-	if not isTransparent then addon:StylizeFrame(eb, {.1, .1, .1, .9}) end
-	eb:SetFontObject("GameFontWhite")
-	eb:SetMultiLine(isMultiLine)
-	eb:SetMaxLetters(0)
-	eb:SetJustifyH("LEFT")
-	eb:SetJustifyV("CENTER")
-	eb:SetWidth(width or 0)
-	eb:SetHeight(height or 0)
-	eb:SetTextInsets(5, 5, 0, 0)
-	eb:SetAutoFocus(false)
-	eb:SetNumeric(isNumeric)
-	eb:SetScript("OnEscapePressed", function() eb:ClearFocus() end)
-	eb:SetScript("OnEnterPressed", function() eb:ClearFocus() end)
-	eb:SetScript("OnEditFocusGained", function() eb:HighlightText() end)
-	eb:SetScript("OnEditFocusLost", function() eb:HighlightText(0, 0) end)
-	eb:SetScript("OnDisable", function() eb:SetTextColor(.7, .7, .7, 1) end)
-	eb:SetScript("OnEnable", function() eb:SetTextColor(1, 1, 1, 1) end)
+    local eb = CreateFrame("EditBox", nil, parent, "BackdropTemplate")
+    if not isTransparent then addon:StylizeFrame(eb, {.1, .1, .1, .9}) end
+    eb:SetFontObject("GameFontWhite")
+    eb:SetMultiLine(isMultiLine)
+    eb:SetMaxLetters(0)
+    eb:SetJustifyH("LEFT")
+    eb:SetJustifyV("CENTER")
+    eb:SetWidth(width or 0)
+    eb:SetHeight(height or 0)
+    eb:SetTextInsets(5, 5, 0, 0)
+    eb:SetAutoFocus(false)
+    eb:SetNumeric(isNumeric)
+    eb:SetScript("OnEscapePressed", function() eb:ClearFocus() end)
+    eb:SetScript("OnEnterPressed", function() eb:ClearFocus() end)
+    eb:SetScript("OnEditFocusGained", function() eb:HighlightText() end)
+    eb:SetScript("OnEditFocusLost", function() eb:HighlightText(0, 0) end)
+    eb:SetScript("OnDisable", function() eb:SetTextColor(.7, .7, .7, 1) end)
+    eb:SetScript("OnEnable", function() eb:SetTextColor(1, 1, 1, 1) end)
 
-	return eb
+    return eb
 end
 
 function addon:CreateScrollEditBox(parent, onTextChanged)
-	local frame = CreateFrame("Frame", nil, parent)
-	addon:CreateScrollFrame(frame)
-	addon:StylizeFrame(frame.scrollFrame, {.15, .15, .15, .9})
-	
-	frame.eb = addon:CreateEditBox(frame.scrollFrame.content, 10, 20, true, true)
-	frame.eb:SetPoint("TOPLEFT")
-	frame.eb:SetPoint("RIGHT")
-	frame.eb:SetTextInsets(2, 2, 1, 1)
-	frame.eb:SetScript("OnEditFocusGained", nil)
-	frame.eb:SetScript("OnEditFocusLost", nil)
+    local frame = CreateFrame("Frame", nil, parent)
+    addon:CreateScrollFrame(frame)
+    addon:StylizeFrame(frame.scrollFrame, {.15, .15, .15, .9})
+    
+    frame.eb = addon:CreateEditBox(frame.scrollFrame.content, 10, 20, true, true)
+    frame.eb:SetPoint("TOPLEFT")
+    frame.eb:SetPoint("RIGHT")
+    frame.eb:SetTextInsets(2, 2, 1, 1)
+    frame.eb:SetScript("OnEditFocusGained", nil)
+    frame.eb:SetScript("OnEditFocusLost", nil)
 
-	frame.eb:SetScript("OnEnterPressed", function(self) self:Insert("\n") end)
+    frame.eb:SetScript("OnEnterPressed", function(self) self:Insert("\n") end)
 
-	-- https://wow.gamepedia.com/UIHANDLER_OnCursorChanged
-	frame.eb:SetScript("OnCursorChanged", function(self, x, y, arg, lineHeight)
-		frame.scrollFrame:SetScrollStep(lineHeight)
+    -- https://wow.gamepedia.com/UIHANDLER_OnCursorChanged
+    frame.eb:SetScript("OnCursorChanged", function(self, x, y, arg, lineHeight)
+        frame.scrollFrame:SetScrollStep(lineHeight)
 
-		local vs = frame.scrollFrame:GetVerticalScroll()
-		local h  = frame.scrollFrame:GetHeight()
+        local vs = frame.scrollFrame:GetVerticalScroll()
+        local h  = frame.scrollFrame:GetHeight()
 
-		local cursorHeight = lineHeight - y
+        local cursorHeight = lineHeight - y
 
-		if vs + y > 0 then -- cursor above current view
-			frame.scrollFrame:SetVerticalScroll(-y)
-		elseif cursorHeight > h + vs then
-			frame.scrollFrame:SetVerticalScroll(-y-h+lineHeight+arg)
-		end
+        if vs + y > 0 then -- cursor above current view
+            frame.scrollFrame:SetVerticalScroll(-y)
+        elseif cursorHeight > h + vs then
+            frame.scrollFrame:SetVerticalScroll(-y-h+lineHeight+arg)
+        end
 
-		if frame.scrollFrame:GetVerticalScroll() > frame.scrollFrame:GetVerticalScrollRange() then frame.scrollFrame:ScrollToBottom() end
-	end)
+        if frame.scrollFrame:GetVerticalScroll() > frame.scrollFrame:GetVerticalScrollRange() then frame.scrollFrame:ScrollToBottom() end
+    end)
 
-	frame.eb:SetScript("OnTextChanged", function(self, userChanged)
-		frame.scrollFrame:SetContentHeight(self:GetHeight())
-		if userChanged and onTextChanged then
-			onTextChanged(self)
-		end
-	end)
+    frame.eb:SetScript("OnTextChanged", function(self, userChanged)
+        frame.scrollFrame:SetContentHeight(self:GetHeight())
+        if userChanged and onTextChanged then
+            onTextChanged(self)
+        end
+    end)
 
-	frame.scrollFrame:SetScript("OnMouseDown", function()
-		frame.eb:SetFocus(true)
-	end)
+    frame.scrollFrame:SetScript("OnMouseDown", function()
+        frame.eb:SetFocus(true)
+    end)
 
-	function frame:SetText(text)
-		frame.scrollFrame:ResetScroll()
-		frame.eb:SetText(text)
-	end
+    function frame:SetText(text)
+        frame.scrollFrame:ResetScroll()
+        frame.eb:SetText(text)
+    end
 
-	return frame
+    return frame
 end
 
 -----------------------------------------
--- slider 2017-06-12 10:37:48
+-- slider
 -----------------------------------------
 -- Interface\FrameXML\OptionsPanelTemplates.xml, line 76, OptionsSliderTemplate
-function addon:CreateSlider(parent, unit, low, high, length, step, onValueChangedFn, afterValueChangedFn, orientation)
-    if not step then step = 1 end
-	if not orientation then orientation = "HORIZONTAL" end
+function addon:CreateSlider(name, parent, low, high, width, step, onValueChangedFn, afterValueChangedFn, isPercentage)
     local slider = CreateFrame("Slider", nil, parent, "BackdropTemplate")
-    slider:SetMinMaxValues(low, high)
-	slider:SetValue(low)
     slider:SetValueStep(step)
-	slider:SetObeyStepOnDrag(true)
-	slider:SetOrientation(orientation)
+    slider:SetObeyStepOnDrag(true)
+    slider:SetOrientation("HORIZONTAL")
+    slider:SetSize(width, 10)
+    local unit = isPercentage and "%" or ""
 
-	slider:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1})
-    slider:SetBackdropColor(.1, .1, .1, .9)
-	slider:SetBackdropBorderColor(0, 0, 0, 1)
+    addon:StylizeFrame(slider, {.115, .115, .115, 1})
+    
+    local nameText = slider:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
+    nameText:SetText(name)
+    nameText:SetPoint("BOTTOM", slider, "TOP", 0, 2)
 
-	if unit and orientation == "HORIZONTAL" then
-		slider.text = slider:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		slider.text:SetText(slider:GetValue() .. " " .. unit)
-		slider.text:SetPoint("LEFT", slider, "RIGHT", 5, 0)
-	end
+    function slider:SetName(n)
+        nameText:SetText(n)
+    end
 
-	if orientation == "VERTICAL" then
-		slider:SetSize(6, length)
-		slider:SetThumbTexture([[Interface\AddOns\GuildRaidAttendance\Media\ThumbTextureV]])
-	else
-		slider:SetSize(length, 6)
-		slider:SetThumbTexture([[Interface\AddOns\GuildRaidAttendance\Media\ThumbTextureH]])
-	end
-	
+    local currentEditBox = addon:CreateEditBox(slider, 44, 14)
+    slider.currentEditBox = currentEditBox
+    currentEditBox:SetPoint("TOP", slider, "BOTTOM", 0, -1)
+    currentEditBox:SetJustifyH("CENTER")
+    currentEditBox:SetScript("OnEditFocusGained", function(self)
+        self:HighlightText()
+    end)
+    currentEditBox:SetScript("OnEnterPressed", function(self)
+        self:ClearFocus()
+        local value
+        if isPercentage then
+            value = string.gsub(self:GetText(), "%%", "")
+            value = tonumber(value)
+        else
+            value = tonumber(self:GetText())
+        end
+
+        if value == self.oldValue then return end
+        if value then
+            if value < slider.low then value = slider.low end
+            if value > slider.high then value = slider.high end
+            self:SetText(value..unit)
+            slider:SetValue(value)
+            if slider.onValueChangedFn then slider.onValueChangedFn(value) end
+            if slider.afterValueChangedFn then slider.afterValueChangedFn(value) end
+        else
+            self:SetText(self.oldValue..unit)
+        end
+    end)
+    currentEditBox:SetScript("OnShow", function(self)
+        if self.oldValue then self:SetText(self.oldValue..unit) end
+    end)
+
+    local lowText = slider:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
+    slider.lowText = lowText
+    lowText:SetTextColor(unpack(colors.grey.t))
+    lowText:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, -1)
+    lowText:SetPoint("BOTTOM", currentEditBox)
+    
+    local highText = slider:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
+    slider.highText = highText
+    highText:SetTextColor(unpack(colors.grey.t))
+    highText:SetPoint("TOPRIGHT", slider, "BOTTOMRIGHT", 0, -1)
+    highText:SetPoint("BOTTOM", currentEditBox)
+
+    local tex = slider:CreateTexture(nil, "ARTWORK")
+    tex:SetColorTexture(classColor.t[1], classColor.t[2], classColor.t[3], .7)
+    tex:SetSize(8, 8)
+    slider:SetThumbTexture(tex)
+
+    local valueBeforeClick
+    slider.onEnter = function()
+        tex:SetColorTexture(classColor.t[1], classColor.t[2], classColor.t[3], 1)
+        valueBeforeClick = slider:GetValue()
+    end
+    slider:SetScript("OnEnter", slider.onEnter)
+    slider.onLeave = function()
+        tex:SetColorTexture(classColor.t[1], classColor.t[2], classColor.t[3], .7)
+    end
+    slider:SetScript("OnLeave", slider.onLeave)
+
+    slider.onValueChangedFn = onValueChangedFn
+    slider.afterValueChangedFn = afterValueChangedFn
+    
     -- if tooltip then slider.tooltipText = tooltip end
 
-    slider:SetScript("OnValueChanged", function(self, value)
-		if unit and orientation == "HORIZONTAL" then slider.text:SetText(value .. " " .. unit) end
-        if onValueChangedFn then onValueChangedFn(value) end
-	end)
-	
-	slider:SetScript("OnMouseUp", function(self, button)
-		if afterValueChangedFn then afterValueChangedFn(slider:GetValue()) end
-	end)
-	
-	return slider
+    local oldValue
+    slider:SetScript("OnValueChanged", function(self, value, userChanged)
+        if oldValue == value then return end
+        oldValue = value
+
+        if math.floor(value) < value then -- decimal
+            value = tonumber(string.format("%.2f", value))
+        end
+
+        currentEditBox:SetText(value..unit)
+        currentEditBox.oldValue = value
+        if userChanged and slider.onValueChangedFn then slider.onValueChangedFn(value) end
+    end)
+
+    slider:SetScript("OnMouseUp", function(self, button, isMouseOver)
+        -- oldValue here == newValue, OnMouseUp called after OnValueChanged
+        if valueBeforeClick ~= oldValue and slider.afterValueChangedFn then
+            valueBeforeClick = oldValue
+            local value = slider:GetValue()
+            if math.floor(value) < value then -- decimal
+                value = tonumber(string.format("%.2f", value))
+            end
+            slider.afterValueChangedFn(value)
+        end
+    end)
+
+    slider:SetValue(low) -- NOTE: needs to be after OnValueChanged
+
+    slider:SetScript("OnDisable", function()
+        nameText:SetTextColor(.4, .4, .4)
+        currentEditBox:SetEnabled(false)
+        slider:SetScript("OnEnter", nil)
+        slider:SetScript("OnLeave", nil)
+        tex:SetColorTexture(.4, .4, .4, .7)
+        lowText:SetTextColor(.4, .4, .4)
+        highText:SetTextColor(.4, .4, .4)
+    end)
+    
+    slider:SetScript("OnEnable", function()
+        nameText:SetTextColor(1, 1, 1)
+        currentEditBox:SetEnabled(true)
+        slider:SetScript("OnEnter", slider.onEnter)
+        slider:SetScript("OnLeave", slider.onLeave)
+        tex:SetColorTexture(classColor.t[1], classColor.t[2], classColor.t[3], .7)
+        lowText:SetTextColor(unpack(colors.grey.t))
+        highText:SetTextColor(unpack(colors.grey.t))
+    end)
+
+    function slider:UpdateMinMaxValues(minV, maxV)
+        slider:SetMinMaxValues(minV, maxV)
+        slider.low = minV
+        slider.high = maxV
+        lowText:SetText(minV..unit)
+        highText:SetText(maxV..unit)
+    end
+    slider:UpdateMinMaxValues(low, high)
+    
+    return slider
 end
 
 --------------------------------------------------------
