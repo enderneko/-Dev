@@ -6,7 +6,7 @@ local LoadInstances, LoadEnemies, LoadDebuffs, Export
 
 local instanceDebuffs = CreateFrame("Frame", "DevInstanceDebuffsFrame", DevMainFrame, "BackdropTemplate")
 instanceDebuffs:Hide()
-instanceDebuffs:SetSize(530, 400)
+instanceDebuffs:SetSize(545, 400)
 instanceDebuffs:SetPoint("CENTER")
 instanceDebuffs:SetFrameStrata("LOW")
 instanceDebuffs:SetMovable(true)
@@ -36,9 +36,10 @@ end)
 --     DevTooltip:Hide()
 -- end)
 
+-- title
 local title = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
 title:SetPoint("TOP", 0, -3)
-title:SetText("Instance Debuffs Collector")
+title:SetText("Instance Debuff Collector")
 title:SetTextColor(.9, .9, .1)
 
 local instanceIDText = instanceDebuffs:CreateFontString(nil, "OVERLAY", "DEV_FONT_NORMAL")
@@ -84,7 +85,7 @@ tips:SetText("[Right-Click] track/untrack/export, [Shift-Click] delete")
 local instanceListFrame = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
 Dev:StylizeFrame(instanceListFrame)
 instanceListFrame:SetPoint("TOPLEFT", addBtn, "BOTTOMLEFT", 0, -5)
-instanceListFrame:SetPoint("BOTTOMRIGHT", instanceDebuffs, "BOTTOMLEFT", 175, 5)
+instanceListFrame:SetPoint("BOTTOMRIGHT", instanceDebuffs, "BOTTOMLEFT", 180, 5)
 
 Dev:CreateScrollFrame(instanceListFrame)
 local currentInstanceHighlight = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
@@ -176,7 +177,7 @@ end
 local enemyListFrame = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
 Dev:StylizeFrame(enemyListFrame)
 enemyListFrame:SetPoint("TOPLEFT", instanceListFrame, "TOPRIGHT", 5, 0)
-enemyListFrame:SetPoint("BOTTOMRIGHT", instanceListFrame, "BOTTOMRIGHT", 175, 0)
+enemyListFrame:SetPoint("BOTTOMRIGHT", instanceListFrame, "BOTTOMRIGHT", 180, 0)
 
 Dev:CreateScrollFrame(enemyListFrame)
 local currentEnemyHighlight = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
@@ -260,16 +261,18 @@ end
 local debuffListFrame = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
 Dev:StylizeFrame(debuffListFrame)
 debuffListFrame:SetPoint("TOPLEFT", enemyListFrame, "TOPRIGHT", 5, 0)
-debuffListFrame:SetPoint("BOTTOMRIGHT", enemyListFrame, "BOTTOMRIGHT", 175, 0)
+debuffListFrame:SetPoint("BOTTOMRIGHT", enemyListFrame, "BOTTOMRIGHT", 180, 0)
 
 Dev:CreateScrollFrame(debuffListFrame)
 local currentDebuffHighlight = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
 currentDebuffHighlight:SetFrameLevel(10)
 Dev:StylizeFrame(currentDebuffHighlight, {0,0,0,0}, {.2, 1, .2})
 
+local sortedDebuffs = {}
 local debuffButtons = {}
 LoadDebuffs = function(enemyTable)
     wipe(debuffButtons)
+    wipe(sortedDebuffs)
     debuffListFrame.scrollFrame:Reset()
     currentDebuffHighlight:Hide()
     currentDebuffHighlight:ClearAllPoints()
@@ -277,10 +280,15 @@ LoadDebuffs = function(enemyTable)
 
     if not enemyTable then return end
 
+    for id in pairs(enemyTable) do
+        tinsert(sortedDebuffs, id)
+    end
+    table.sort(sortedDebuffs)
+
     local last
-    for id, name in pairs(enemyTable) do
+    for _, id in ipairs(sortedDebuffs) do
         local icon = select(3, GetSpellInfo(id))
-        local b = Dev:CreateButton(debuffListFrame.scrollFrame.content, "|T"..icon..":0|t "..id.." "..name, "red-hover", {20, 20}, true)
+        local b = Dev:CreateButton(debuffListFrame.scrollFrame.content, "|T"..icon..":0|t "..id.." "..enemyTable[id], "red-hover", {20, 20}, true)
         tinsert(debuffButtons, b)
 
         b:GetFontString():ClearAllPoints()
@@ -312,7 +320,7 @@ LoadDebuffs = function(enemyTable)
                     -- DevTooltip:SetPoint("LEFT", instanceDebuffs, "RIGHT", 1, 0)
                     -- DevTooltip:SetHyperlink("spell:"..id)
                     -- DevTooltip:Show()
-                    Export(id..", -- "..name)
+                    Export(id..", -- "..enemyTable[id])
                 end
             end
         end)
@@ -339,7 +347,7 @@ end
 local exportFrame = CreateFrame("Frame", nil, instanceDebuffs, "BackdropTemplate")
 Dev:StylizeFrame(exportFrame)
 exportFrame:SetPoint("TOPLEFT", debuffListFrame, "TOPRIGHT", 10, 0)
-exportFrame:SetPoint("BOTTOMRIGHT", debuffListFrame, "BOTTOMRIGHT", 180, 0)
+exportFrame:SetPoint("BOTTOMRIGHT", debuffListFrame, "BOTTOMRIGHT", 185, 0)
 exportFrame:Hide()
 
 local exportFrameEditBox = Dev:CreateScrollEditBox(exportFrame)
@@ -361,9 +369,16 @@ Export = function(data)
     if type(data) == "string" then
         exportFrameEditBox:SetText(data)
     elseif type(data) == "table" then
+        -- sort
+        local sortedDebuffs = {}
+        for id in pairs(data) do
+            tinsert(sortedDebuffs, id)
+        end
+        table.sort(sortedDebuffs)
+
         local result = ""
-        for id, name in pairs(data) do
-            result = result..id..", -- "..name.."\n"
+        for _, id in ipairs(sortedDebuffs) do
+            result = result..id..", -- "..data[id].."\n"
         end
         exportFrameEditBox:SetText(result)
     end
