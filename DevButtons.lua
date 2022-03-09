@@ -68,6 +68,7 @@ local buttons = {
         end
     end, nil, true},
     {"TableSaver" ,"function", function(t)
+        if not t or t == "" then return end
         RunScript("DevTableSaver="..t)
     end, nil, true},
 }
