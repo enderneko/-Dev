@@ -142,6 +142,7 @@ LoadInstances = function()
                     selectedInstance = id
                     currentInstanceHighlight:Show()
                     currentInstanceHighlight:SetAllPoints(b)
+                    currentInstanceHighlight:SetParent(b)
                     LoadEnemies(DevInstanceDebuffs["trackings"][id][3])
                     LoadDebuffs(nil)
                 end
@@ -244,6 +245,7 @@ LoadEnemies = function(instanceTable)
                 else
                     currentEnemyHighlight:Show()
                     currentEnemyHighlight:SetAllPoints(b)
+                    currentEnemyHighlight:SetParent(b)
                     LoadDebuffs(instanceTable[enemy])
                 end
             elseif button == "RightButton" then
@@ -316,6 +318,7 @@ LoadDebuffs = function(enemyTable)
                 else
                     currentDebuffHighlight:Show()
                     currentDebuffHighlight:SetAllPoints(b)
+                    currentDebuffHighlight:SetParent(b)
                     -- DevTooltip:SetOwner(instanceDebuffs, "ANCHOR_NONE")
                     -- DevTooltip:SetPoint("LEFT", instanceDebuffs, "RIGHT", 1, 0)
                     -- DevTooltip:SetHyperlink("spell:"..id)
