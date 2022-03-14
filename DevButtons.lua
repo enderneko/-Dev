@@ -22,8 +22,9 @@ local escapeSequences = {
 --{name/addonName, type, action, dependOnAddon, hasEditBox}
 local buttons = {
     {"Abstract data", "script", "texplore(\"Abstract\", Abstract.data, 10)", "Abstract"},
-    {"|cffff9999wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract"},
-    {"|cffff9999wipe CellDB", "script", "CellDB=nil;ReloadUI()", "Cell"},
+    {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract", false, "green"},
+    {"wipe CellDB", "script", "CellDB=nil;ReloadUI()", "Cell", false, "green"},
+    {"wipe IVSP", "script", "IVSP_Config=nil;IVSP_Custom=nil;ReloadUI()", "IcyVeinsStatPriority", false, "green"},
     -- {"CellDB debuffs", "script", "texplore(CellDB[\"raidDebuffs\"])", "TableExplorer"},
     -- {"Cell.unitButtons", "script", "texplore(Cell.unitButtons)", "Cell"},
     -- {"CellDB indicators", "script", "texplore(Cell.vars.currentLayoutTable.indicators)", "Cell"},
@@ -126,8 +127,8 @@ function eventFrame:PLAYER_ENTERING_WORLD()
 
     local last, numEB = nil, 0
     for i, t in pairs(buttons) do
-        local bName, bType, bAction, bDependOnAddon, bHasEditBox = unpack(t)
-        local b = Dev:CreateButton(devButtonsFrame, bName, "red", {BUTTON_WIDTH, BUTTON_HEIGHT}, false, true)
+        local bName, bType, bAction, bDependOnAddon, bHasEditBox, color = unpack(t)
+        local b = Dev:CreateButton(devButtonsFrame, bName, color or "red", {BUTTON_WIDTH, BUTTON_HEIGHT}, false, true)
 
         if not bDependOnAddon or IsAddOnLoaded(bDependOnAddon) then
             if bType == "macro" then
