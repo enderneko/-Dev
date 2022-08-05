@@ -1,4 +1,4 @@
-## Interface: 90200
+## Interface: 90205
 ## Title: |cFFFF3030DevTools|r
 ## Version: 1
 ## Author: 篠崎
@@ -13,6 +13,7 @@ DevMain.lua
 
 DevConfig.lua
 DevInstanceDebuffs.lua
+DevInstanceList.lua
 DevButtons.lua
 
 DND.lua

@@ -21,16 +21,17 @@ local escapeSequences = {
 
 --{name/addonName, type, action, dependOnAddon, hasEditBox}
 local buttons = {
-    {"Abstract data", "script", "texplore(\"Abstract\", Abstract.data, 10)", "Abstract"},
-    {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract", false, "green"},
+    -- {"Abstract data", "script", "texplore(\"Abstract\", Abstract.data, 10)", "Abstract"},
+    -- {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract", false, "green"},
     {"wipe CellDB", "script", "CellDB=nil;ReloadUI()", "Cell", false, "green"},
-    {"wipe IVSP", "script", "IVSP_Config=nil;IVSP_Custom=nil;ReloadUI()", "IcyVeinsStatPriority", false, "green"},
+    -- {"wipe IVSP", "script", "IVSP_Config=nil;IVSP_Custom=nil;ReloadUI()", "IcyVeinsStatPriority", false, "green"},
     -- {"CellDB debuffs", "script", "texplore(CellDB[\"raidDebuffs\"])", "TableExplorer"},
     -- {"Cell.unitButtons", "script", "texplore(Cell.unitButtons)", "Cell"},
     -- {"CellDB indicators", "script", "texplore(Cell.vars.currentLayoutTable.indicators)", "Cell"},
-    {"Invite", "macro", "/invite Programming-影之哀伤\n/invite Luascript-影之哀伤"},
+    -- {"Invite", "macro", "/invite Programming-影之哀伤\n/invite Luascript-影之哀伤"},
 
     -- general ------------------------
+    {"|cff77ff77ClearChat", "script", "DEFAULT_CHAT_FRAME:Clear()"},
     {"|cff77ff77ReloadUI", "script", "ReloadUI()"},
     {"|cff77ff77fstack", "macro", "/fstack"},
     {"|cff77ffffcollectgarbage", "script", "collectgarbage(\"collect\")"},
@@ -42,6 +43,9 @@ local buttons = {
         ShowUIPanel(EncounterJournal)
         print("encounterID:", EncounterJournal.encounterID, "instanceID:", EncounterJournal.instanceID)
     end},
+    {"|cffffff77InstanceList", "function", function(tier)
+        Dev:ShowInstanceList(tier)
+    end, nil, true},
     {"InterfaceUsage", "macro", "/iu", "InterfaceUsage"},
     {"APIInterface", "macro", "/apii", "APIInterface"},
     {"TextureViewer", "macro", "/texview", "TextureViewer"},
