@@ -24,6 +24,7 @@ local buttons = {
     -- {"Abstract data", "script", "texplore(\"Abstract\", Abstract.data, 10)", "Abstract"},
     -- {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract", false, "green"},
     {"wipe CellDB", "script", "CellDB=nil;ReloadUI()", "Cell", false, "green"},
+    {"wipe TIC_DB", "script", "TIC_DB=nil;ReloadUI()", "TooltipItemCount", false, "green"},
     -- {"wipe IVSP", "script", "IVSP_Config=nil;IVSP_Custom=nil;ReloadUI()", "IcyVeinsStatPriority", false, "green"},
     -- {"CellDB debuffs", "script", "texplore(CellDB[\"raidDebuffs\"])", "TableExplorer"},
     -- {"Cell.unitButtons", "script", "texplore(Cell.unitButtons)", "Cell"},
@@ -45,6 +46,9 @@ local buttons = {
     end},
     {"|cffffff77InstanceList", "function", function(tier)
         Dev:ShowInstanceList(tier)
+    end, nil, true},
+    {"|cff77ffffGetSpellInfo", "function", function(spellId)
+        DevTools_Dump({GetSpellInfo(spellId)})
     end, nil, true},
     {"InterfaceUsage", "macro", "/iu", "InterfaceUsage"},
     {"APIInterface", "macro", "/apii", "APIInterface"},
@@ -150,7 +154,8 @@ function eventFrame:PLAYER_ENTERING_WORLD()
                     numEB = numEB + 1
                 end
 
-                b:SetScript("OnClick", function()
+                b:SetScript("OnClick", function(self, button, down)
+                    if not down then return end
                     if bHasEditBox then
                         local p = b.eb:GetText()
                         local script = string.gsub(bAction, "%$", p)
@@ -170,7 +175,8 @@ function eventFrame:PLAYER_ENTERING_WORLD()
                     numEB = numEB + 1
                 end
 
-                b:SetScript("OnClick", function()
+                b:SetScript("OnClick", function(self, button, down)
+                    if not down then return end
                     if b.eb then
                         bAction(b.eb:GetText())
                     else

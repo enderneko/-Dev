@@ -1,5 +1,12 @@
 local addonName, Dev = ...
+DevTools = Dev
+
 local P = Dev.pixelPerfectFuncs
+
+Dev.isAsian = LOCALE_zhCN or LOCALE_zhTW or LOCALE_koKR
+Dev.isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+Dev.isClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+Dev.isWrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("ADDON_LOADED")

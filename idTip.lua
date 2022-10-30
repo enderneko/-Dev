@@ -23,9 +23,11 @@ local kinds = {
   equipmentset = "EquipmentSetID",
   visual = "VisualID",
   source = "SourceID",
+  species = "SpeciesID",
+  icon = "IconID",
 }
 
-local isClassicWow = select(4,GetBuildInfo()) < 30000
+local isClassicWow = select(4,GetBuildInfo()) < 90000
 
 local function contains(table, element)
   for _, value in pairs(table) do
@@ -43,19 +45,28 @@ local function addLine(tooltip, id, kind)
   for i = 1,15 do
     frame = _G[tooltip:GetName() .. "TextLeft" .. i]
     if frame then text = frame:GetText() end
-    if text and string.find(text, kind .. ":") then return end
+    if text and string.find(text, kind) then return end
   end
 
   local left, right
   if type(id) == "table" then
-    left = NORMAL_FONT_COLOR_CODE .. kind .. "s:" .. FONT_COLOR_CODE_CLOSE
+    left = NORMAL_FONT_COLOR_CODE .. kind .. "s" .. FONT_COLOR_CODE_CLOSE
     right = HIGHLIGHT_FONT_COLOR_CODE .. table.concat(id, ", ") .. FONT_COLOR_CODE_CLOSE
   else
-    left = NORMAL_FONT_COLOR_CODE .. kind .. ":" .. FONT_COLOR_CODE_CLOSE
+    left = NORMAL_FONT_COLOR_CODE .. kind .. FONT_COLOR_CODE_CLOSE
     right = HIGHLIGHT_FONT_COLOR_CODE .. id .. FONT_COLOR_CODE_CLOSE
   end
 
   tooltip:AddDoubleLine(left, right)
+
+  if kind == kinds.spell then
+    iconId = select(3, GetSpellInfo(id))
+    if iconId then addLine(tooltip, iconId, kinds.icon) end
+  elseif kind == kinds.item then
+    iconId = C_Item.GetItemIconByID(id)
+    if iconId then addLine(tooltip, iconId, kinds.icon) end
+  end
+
   tooltip:Show()
 end
 
@@ -130,39 +141,50 @@ GameTooltip:HookScript("OnTooltipSetSpell", function(self)
   addLine(self, id, kinds.spell)
 end)
 
-hooksecurefunc("SpellButton_OnEnter", function(self)
-  local slot = SpellBook_GetSpellBookSlot(self)
-  local spellID = select(2, GetSpellBookItemInfo(slot, SpellBookFrame.bookType))
-  addLine(GameTooltip, spellID, kinds.spell)
-end)
+-- hooksecurefunc("SpellButton_OnEnter", function(self)
+--   local slot = SpellBook_GetSpellBookSlot(self)
+--   local spellID = select(2, GetSpellBookItemInfo(slot, SpellBookFrame.bookType))
+--   addLine(GameTooltip, spellID, kinds.spell)
+-- end)
 
 if not isClassicWow then
-  hooksecurefunc(GameTooltip, "SetRecipeResultItem", function(self, id)
-    addLine(self, id, kinds.spell)
-  end)
+  -- hooksecurefunc(GameTooltip, "SetRecipeResultItem", function(self, id)
+  --   addLine(self, id, kinds.spell)
+  -- end)
 
-  hooksecurefunc(GameTooltip, "SetRecipeRankInfo", function(self, id)
-    addLine(self, id, kinds.spell)
-  end)
+  -- hooksecurefunc(GameTooltip, "SetRecipeRankInfo", function(self, id)
+  --   addLine(self, id, kinds.spell)
+  -- end)
 
-  -- Artifact Powers
-  hooksecurefunc(GameTooltip, "SetArtifactPowerByID", function(self, powerID)
-    local powerInfo = C_ArtifactUI.GetPowerInfo(powerID)
-    addLine(self, powerID, kinds.artifactpower)
-    addLine(self, powerInfo.spellID, kinds.spell)
-  end)
+  -- -- Artifact Powers
+  -- hooksecurefunc(GameTooltip, "SetArtifactPowerByID", function(self, powerID)
+  --   local powerInfo = C_ArtifactUI.GetPowerInfo(powerID)
+  --   addLine(self, powerID, kinds.artifactpower)
+  --   addLine(self, powerInfo.spellID, kinds.spell)
+  -- end)
 
-  -- Talents
+  -- -- Talents
   hooksecurefunc(GameTooltip, "SetTalent", function(self, id)
+    print(self, id)
     local spellID = select(6, GetTalentInfoByID(id))
     addLine(self, id, kinds.talent)
     addLine(self, spellID, kinds.spell)
   end)
-  hooksecurefunc(GameTooltip, "SetPvpTalent", function(self, id)
-    local spellID = select(6, GetPvpTalentInfoByID(id))
-    addLine(self, id, kinds.talent)
-    addLine(self, spellID, kinds.spell)
-  end)
+  -- hooksecurefunc(GameTooltip, "SetPvpTalent", function(self, id)
+  --   local spellID = select(6, GetPvpTalentInfoByID(id))
+  --   addLine(self, id, kinds.talent)
+  --   addLine(self, spellID, kinds.spell)
+  -- end)
+
+  -- -- Pet Journal team icon
+  -- hooksecurefunc(GameTooltip, "SetCompanionPet", function(self, petID)
+  --   local speciesID = select(1, C_PetJournal.GetPetInfoByPetID(petID));
+  --   if speciesID then
+  --     local npcId = select(4, C_PetJournal.GetPetInfoBySpeciesID(speciesID));
+  --     addLine(GameTooltip, speciesID, kinds.species);
+  --     addLine(GameTooltip, npcId, kinds.unit);
+  --   end
+  -- end)
 end
 -- NPCs
 GameTooltip:HookScript("OnTooltipSetUnit", function(self)
@@ -310,6 +332,23 @@ f:SetScript("OnEvent", function(_, _, what)
       if #sourceIDs ~= 0 then addLine(GameTooltip, sourceIDs, kinds.source) end
       if #itemIDs ~= 0 then addLine(GameTooltip, itemIDs, kinds.item) end
     end)
+
+    -- Pet Journal selected pet info icon
+    PetJournalPetCardPetInfo:HookScript("OnEnter", function(self)
+      if PetJournalPetCard.speciesID then
+        local npcId = select(4, C_PetJournal.GetPetInfoBySpeciesID(PetJournalPetCard.speciesID));
+        addLine(GameTooltip, PetJournalPetCard.speciesID, kinds.species);
+        addLine(GameTooltip, npcId, kinds.unit);
+      end
+    end);
+
+  elseif what == "Blizzard_GarrisonUI" then
+    -- ability id
+    hooksecurefunc("AddAutoCombatSpellToTooltip", function (self, info)
+      if info and info.autoCombatSpellID then
+        addLine(self, info.autoCombatSpellID, kinds.ability)
+      end
+    end)
   end
 end)
 
@@ -338,7 +377,7 @@ if not isClassicWow then
 
   -- Currencies
   hooksecurefunc(GameTooltip, "SetCurrencyToken", function(self, index)
-    local id = tonumber(string.match(GetCurrencyListLink(index),"currency:(%d+)"))
+    local id = tonumber(string.match(C_CurrencyInfo.GetCurrencyListLink(index),"currency:(%d+)"))
     addLine(self, id, kinds.currency)
   end)
 
@@ -352,7 +391,7 @@ if not isClassicWow then
 
   -- Quests
   hooksecurefunc("QuestMapLogTitleButton_OnEnter", function(self)
-    local id = select(3, C_QuestLog.GetInfo(self.questLogIndex))
+    local id = C_QuestLog.GetQuestIDForLogIndex(self.questLogIndex)
     addLine(GameTooltip, id, kinds.quest)
   end)
 

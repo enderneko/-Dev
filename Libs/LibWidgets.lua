@@ -24,21 +24,21 @@ end
 -- font
 -----------------------------------------
 local font_normal = CreateFont("DEV_FONT_NORMAL")
-font_normal:SetFont(GameFontNormal:GetFont(), 13)
+font_normal:SetFont(GameFontNormal:GetFont(), 13, "")
 font_normal:SetTextColor(1, 1, 1, 1)
 font_normal:SetShadowColor(0, 0, 0)
 font_normal:SetShadowOffset(1, -1)
 font_normal:SetJustifyH("CENTER")
 
 local font_disabled = CreateFont("DEV_FONT_DISABLED")
-font_disabled:SetFont(GameFontNormal:GetFont(), 13)
+font_disabled:SetFont(GameFontNormal:GetFont(), 13, "")
 font_disabled:SetTextColor(.4, .4, .4, 1)
 font_disabled:SetShadowColor(0, 0, 0)
 font_disabled:SetShadowOffset(1, -1)
 font_disabled:SetJustifyH("CENTER")
 
 local font_title = CreateFont("DEV_FONT_TITLE")
-font_title:SetFont(GameFontNormal:GetFont(), 14)
+font_title:SetFont(GameFontNormal:GetFont(), 14, "")
 font_title:SetTextColor(1, 1, 1, 1)
 font_title:SetShadowColor(0, 0, 0)
 font_title:SetShadowOffset(1, -1)
@@ -86,15 +86,31 @@ local function SetTooltip(widget, anchor, x, y, ...)
     end
 end
 
+-- hooksecurefunc("SecureActionButton_OnClick", function(self, inputButton, down, isKeyPress, isSecureAction)
+--     print(self:GetName(), self:GetAttribute("pressAndHoldAction"), inputButton, down, isKeyPress, isSecureAction)
+-- end)
+
 function addon:CreateButton(parent, text, buttonColor, size, noBorder, isSecure, ...)
-    local template
+    local b
     if isSecure then
-        template = "SecureActionButtonTemplate,BackdropTemplate"
+        b = CreateFrame("Button", "Dev_"..text, parent, "SecureActionButtonTemplate,BackdropTemplate")
+        b:RegisterForClicks("AnyUp", "AnyDown")
+
+        -- b:SetAttribute("type", "click")
+        -- b:SetAttribute("clickbutton", b.real)
+        -- SecureHandlerWrapScript(b, "OnClick", b, [[
+        --     if down then
+        --         print("saved", button, "on down")
+        --         self:SetAttribute("origbutton", button)
+        --     else
+        --         print("restored", self:GetAttribute("origbutton"), "on up")
+        --         return self:GetAttribute("origbutton")
+        --     end
+        -- ]])
     else
-        template = "BackdropTemplate"
+        b = CreateFrame("Button", "Dev_"..text, parent, "BackdropTemplate")
     end
 
-    local b = CreateFrame("Button", nil, parent, template)
     if parent then b:SetFrameLevel(parent:GetFrameLevel()+1) end
     b:SetText(text)
     b:SetSize(unpack(size))
@@ -202,7 +218,20 @@ function addon:CreateButton(parent, text, buttonColor, size, noBorder, isSecure,
     end
     
     -- click sound
-    b:SetScript("PostClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) end)
+    if addon.isRetail then
+        b:SetScript("PostClick", function(self, button, down)
+            --! NOTE: ActionButtonUseKeyDown will affect OnClick
+            if isSecure then
+                if down == GetCVarBool("ActionButtonUseKeyDown") then
+                    PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+                end
+            else
+                PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+            end
+        end)
+    else
+        b:SetScript("PostClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) end)
+    end
 
     SetTooltip(b, "ANCHOR_TOPLEFT", 0, 3, ...)
 

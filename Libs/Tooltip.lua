@@ -13,15 +13,24 @@ local function CreateTooltip(name)
 	tooltip:SetBackdropColor(.1, .1, .1, .9)
 	tooltip:SetBackdropBorderColor(unpack(classColor))
 	tooltip:SetOwner(UIParent, "ANCHOR_NONE")
+
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+        tooltip:RegisterEvent("TOOLTIP_DATA_UPDATE")
+        tooltip:SetScript("OnEvent", function()
+            -- Interface\FrameXML\GameTooltip.lua line924
+            tooltip:RefreshData()
+        end)
+    end
+
 	tooltip:SetScript("OnTooltipCleared", function()
 		-- reset border color
 		tooltip:SetBackdropBorderColor(unpack(classColor))
 	end)
 
-	tooltip:SetScript("OnTooltipSetItem", function()
-		-- color border with item quality color
-		tooltip:SetBackdropBorderColor(_G[name.."TextLeft1"]:GetTextColor())
-	end)
+	-- tooltip:SetScript("OnTooltipSetItem", function()
+	-- 	-- color border with item quality color
+	-- 	tooltip:SetBackdropBorderColor(_G[name.."TextLeft1"]:GetTextColor())
+	-- end)
 
 	tooltip:SetScript("OnHide", function()
 		-- SetX with invalid data may or may not clear the tooltip's contents.
