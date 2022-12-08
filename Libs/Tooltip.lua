@@ -1,8 +1,4 @@
-local class = select(2, UnitClass("player"))
-local classColor = {.7, .7, .7, 1}
-if class then
-	classColor[1], classColor[2], classColor[3] = GetClassColor(class)
-end
+local accentColor = {0.6, 0.1, 0.1, 1}
 
 -----------------------------------------
 -- Tooltip
@@ -11,7 +7,7 @@ local function CreateTooltip(name)
 	local tooltip = CreateFrame("GameTooltip", name, nil, "DevTooltipTemplate,BackdropTemplate")
 	tooltip:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1})
 	tooltip:SetBackdropColor(.1, .1, .1, .9)
-	tooltip:SetBackdropBorderColor(unpack(classColor))
+	tooltip:SetBackdropBorderColor(unpack(accentColor))
 	tooltip:SetOwner(UIParent, "ANCHOR_NONE")
 
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
@@ -24,7 +20,7 @@ local function CreateTooltip(name)
 
 	tooltip:SetScript("OnTooltipCleared", function()
 		-- reset border color
-		tooltip:SetBackdropBorderColor(unpack(classColor))
+		tooltip:SetBackdropBorderColor(unpack(accentColor))
 	end)
 
 	-- tooltip:SetScript("OnTooltipSetItem", function()

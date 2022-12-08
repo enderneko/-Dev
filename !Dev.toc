@@ -1,9 +1,8 @@
 ## Interface: 100002
 ## Interface-Wrath: 30400
 ## Title: |cFFFF3030DevTools|r
-## Version: 1
 ## Author: 篠崎
-## SavedVariables: DevDB,DevInstanceDebuffs,DevInstanceList,DevTableSaver
+## SavedVariables: DevDB,DevInstance,DevInstanceDebuffs,DevTableSaver
 
 Libs\LoadLibs.xml
 
@@ -13,8 +12,6 @@ Core.lua
 DevMain.lua
 
 DevConfig.lua
-DevInstanceDebuffs.lua
+DevInstanceSpells.lua
 DevInstanceList.lua
 DevButtons.lua
-
-DND.lua

@@ -13,12 +13,13 @@ local colors = {
     chartreuse = {s="|cFF80FF00", t={.5, 1, 0}},
 }
 
-local class = select(2, UnitClass("player"))
-local classColor = {s="|cCCB2B2B2", t={.7, .7, .7}}
-if class then
-    classColor.t[1], classColor.t[2], classColor.t[3], classColor.s = GetClassColor(class)
-    classColor.s = "|c"..classColor.s
-end
+local accentColor = {0.6, 0.1, 0.1, 1}
+-- local class = select(2, UnitClass("player"))
+-- local classColor = {s="|cCCB2B2B2", t={.7, .7, .7}}
+-- if class then
+--     accentColor[1], accentColor[2], accentColor[3], classColor.s = GetClassColor(class)
+--     classColor.s = "|c"..classColor.s
+-- end
 
 -----------------------------------------
 -- font
@@ -466,18 +467,18 @@ function addon:CreateSlider(name, parent, low, high, width, step, onValueChanged
     highText:SetPoint("BOTTOM", currentEditBox)
 
     local tex = slider:CreateTexture(nil, "ARTWORK")
-    tex:SetColorTexture(classColor.t[1], classColor.t[2], classColor.t[3], .7)
+    tex:SetColorTexture(accentColor[1], accentColor[2], accentColor[3], 0.7)
     tex:SetSize(8, 8)
     slider:SetThumbTexture(tex)
 
     local valueBeforeClick
     slider.onEnter = function()
-        tex:SetColorTexture(classColor.t[1], classColor.t[2], classColor.t[3], 1)
+        tex:SetColorTexture(accentColor[1], accentColor[2], accentColor[3], 1)
         valueBeforeClick = slider:GetValue()
     end
     slider:SetScript("OnEnter", slider.onEnter)
     slider.onLeave = function()
-        tex:SetColorTexture(classColor.t[1], classColor.t[2], classColor.t[3], .7)
+        tex:SetColorTexture(accentColor[1], accentColor[2], accentColor[3], 0.7)
     end
     slider:SetScript("OnLeave", slider.onLeave)
 
@@ -529,7 +530,7 @@ function addon:CreateSlider(name, parent, low, high, width, step, onValueChanged
         currentEditBox:SetEnabled(true)
         slider:SetScript("OnEnter", slider.onEnter)
         slider:SetScript("OnLeave", slider.onLeave)
-        tex:SetColorTexture(classColor.t[1], classColor.t[2], classColor.t[3], .7)
+        tex:SetColorTexture(accentColor[1], accentColor[2], accentColor[3], .7)
         lowText:SetTextColor(unpack(colors.grey.t))
         highText:SetTextColor(unpack(colors.grey.t))
     end)
@@ -589,7 +590,7 @@ function addon:CreateScrollFrame(parent, top, bottom, color, border)
     scrollThumb:SetWidth(5) -- scrollbar's width is 5
     scrollThumb:SetHeight(scrollbar:GetHeight())
     scrollThumb:SetPoint("TOP")
-    addon:StylizeFrame(scrollThumb, {classColor.t[1], classColor.t[2], classColor.t[3], .8})
+    addon:StylizeFrame(scrollThumb, {accentColor[1], accentColor[2], accentColor[3], 0.8})
     scrollThumb:EnableMouse(true)
     scrollThumb:SetMovable(true)
     scrollThumb:SetHitRectInsets(-5, -5, 0, 0) -- Frame:SetHitRectInsets(left, right, top, bottom)

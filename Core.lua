@@ -18,12 +18,28 @@ function eventFrame:ADDON_LOADED(arg1)
         if type(DevDB["show"]) ~= "boolean" then DevDB["show"] = true end
         if type(DevDB["scale"]) ~= "number" then DevDB["scale"] = 1 end
         
-        if type(DevInstanceDebuffs) ~= "table" then
-            DevInstanceDebuffs = {
-                ["trackings"] = {
-                    -- [id] = {enabled, name, {}},
+        if type(DevInstance) ~= "table" then
+            DevInstance = {
+                ["instances"] = {
+                    -- [id] = {name=string, enabled=boolean}
                 },
+                ["debuffs"] = {
+                    -- [sourceName] = {spellId=spellname}
+                },
+                ["casts"] = {
+                    -- [sourceName] = {spellId=spellname}
+                }
             }
+        end
+
+        -- convert old
+        if type(DevInstanceDebuffs) == "table" then
+            for id, t in pairs(DevInstanceDebuffs["trackings"]) do
+                DevInstance["instances"][id] = {["name"]=t[2], ["enabled"]=t[1]}
+                DevInstance["debuffs"][id] = t[3]
+                DevInstance["casts"][id] = {}
+            end
+            DevInstanceDebuffs = nil
         end
 
         Dev:UpdateScale()
