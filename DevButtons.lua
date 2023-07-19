@@ -35,6 +35,22 @@ local buttons = {
     {"|cff77ff77ClearChat", "script", "DEFAULT_CHAT_FRAME:Clear()"},
     {"|cff77ff77ReloadUI", "script", "ReloadUI()"},
     {"|cff77ff77fstack", "macro", "/fstack"},
+    {"backgroud", "function", function()
+        if not THE_BACKGROUND then
+            THE_BACKGROUND = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+            THE_BACKGROUND:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8"})
+            THE_BACKGROUND:SetBackdropColor(0.3, 0.3, 0.3, 1)
+            THE_BACKGROUND:SetAllPoints(UIParent)
+            THE_BACKGROUND:SetFrameStrata("BACKGROUND")
+            THE_BACKGROUND:SetFrameLevel(0)
+            THE_BACKGROUND:Hide()
+        end
+        if THE_BACKGROUND:IsShown() then
+            THE_BACKGROUND:Hide()
+        else
+            THE_BACKGROUND:Show()
+        end
+    end},
     {"|cff77ffffcollectgarbage", "script", "collectgarbage(\"collect\")"},
     -- {"RunScript", "script", "$", nil, true},
     -- {"GetSpellInfo", "script", "print(GetSpellInfo($))", nil, true},
