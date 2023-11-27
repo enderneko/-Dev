@@ -12,6 +12,6 @@ Core.lua
 DevMain.lua
 
 DevConfig.lua
-# DevInstanceSpells.lua
 DevInstanceList.lua
+DevSpellLocalizer.lua
 DevButtons.lua

@@ -1,10 +1,3 @@
---[[
--- File: DevInstanceList.lua
--- Author: enderneko (enderneko-dev@outlook.com)
--- File Created: 2022/08/05 16:32:45 +0800
--- Last Modified: 2022/08/05 17:31:57 +0800
---]]
-
 local _, Dev = ...
 
 local instanceListFrame = CreateFrame("Frame", "DevInstanceListFrame", DevMainFrame, "BackdropTemplate")
