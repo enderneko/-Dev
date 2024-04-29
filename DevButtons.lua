@@ -25,6 +25,8 @@ local buttons = {
     -- {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract", false, "green"},
     {"wipe CellDB", "script", "CellDB=nil;ReloadUI()", "Cell", false, "green"},
     {"AW_DEMO", "script", "BigFootInfinite.AW:ShowDemo()", "BigFootInfinite", false, "blue"},
+    {"BFI.current", "script", "texplore(BigFootInfinite.vars.currentConfigTable)", "BigFootInfinite", false, "blue"},
+    {"wipe BFI", "script", "BFIConfig=nil;ReloadUI()", "BigFootInfinite", false, "green"},
     -- {"wipe TIC_DB", "script", "TIC_DB=nil;ReloadUI()", "TooltipItemCount", false, "green"},
     -- {"wipe IVSP", "script", "IVSP_Config=nil;IVSP_Custom=nil;ReloadUI()", "IcyVeinsStatPriority", false, "green"},
     -- {"CellDB debuffs", "script", "texplore(CellDB[\"raidDebuffs\"])", "TableExplorer"},
@@ -69,6 +71,9 @@ local buttons = {
     end},
     {"|cff77ffffGetSpellInfo", "function", function(spellId)
         DevTools_Dump({GetSpellInfo(spellId)})
+    end, nil, true},
+    {"|cff77ffffPrintItemInfo", "function", function(itemId)
+        print(C_Item.GetItemInfo(itemId))
     end, nil, true},
     {"InterfaceUsage", "macro", "/iu", "InterfaceUsage"},
     {"APIInterface", "macro", "/apii", "APIInterface"},
