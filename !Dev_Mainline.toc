@@ -1,0 +1,17 @@
+## Interface: 100207
+## Interface-Wrath: 40400
+## Title: |cFFFF3030DevTools|r
+## Author: enderneko
+## SavedVariables: DevDB,DevInstance,DevInstanceDebuffs,DevTableSaver
+
+Libs\LoadLibs.xml
+
+Core.lua
+# idTip.lua
+
+DevMain.lua
+
+DevConfig.lua
+DevInstanceList.lua
+DevSpellLocalizer.lua
+DevButtons.lua
