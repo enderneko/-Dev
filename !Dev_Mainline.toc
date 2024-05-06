@@ -2,7 +2,7 @@
 ## Interface-Wrath: 40400
 ## Title: |cFFFF3030DevTools|r
 ## Author: enderneko
-## SavedVariables: DevDB,DevInstance,DevInstanceDebuffs,DevTableSaver
+## SavedVariables: DevDB,DevInstance,DevInstanceDebuffs,DevTableSaver,DevItemIcons
 
 Libs\LoadLibs.xml
 

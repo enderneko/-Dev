@@ -66,8 +66,40 @@ local buttons = {
     {"|cffffff77InstanceList", "function", function(tier)
         Dev:ShowInstanceList(tier)
     end, nil, true},
-    {"|cff77ffffSpellLocalizer", "function", function()
+    {"|cffff77ffSpellLocalizer", "function", function()
         Dev:ShowSpellLocalizer()
+    end},
+    {"|cffff77ffGetItemIcons", "function", function(b)
+        b:SetEnabled(false)
+        
+        local index = 1
+        local isProcessing = false
+        local num = #DevItemIcons
+
+        b:SetScript("OnUpdate", function()
+            if not isProcessing then
+                isProcessing = true
+
+                local value = DevItemIcons[index]
+                if value and type(value) == "number" then
+                    local icon = select(5, C_Item.GetItemInfoInstant(value))
+                    if icon then
+                        value = value .. ":" .. icon
+                    else
+                        value = value .. ":nil"
+                    end
+                    DevItemIcons[index] = value
+                    
+                    b:SetFormattedText("%.2f%%", index / num * 100)
+                    index = index + 1
+                    isProcessing = false
+                else
+                    b:SetScript("OnUpdate", nil)
+                    b:SetText("|cffff77ffGetItemIcons")
+                    b:SetEnabled(true)
+                end
+            end
+        end)
     end},
     {"|cff77ffffGetSpellInfo", "function", function(spellId)
         DevTools_Dump({GetSpellInfo(spellId)})
@@ -205,7 +237,7 @@ function eventFrame:PLAYER_ENTERING_WORLD()
                     if b.eb then
                         bAction(b.eb:GetText())
                     else
-                        bAction()
+                        bAction(b)
                     end
                 end)
             end

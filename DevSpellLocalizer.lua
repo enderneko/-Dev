@@ -2,6 +2,8 @@ local _, Dev = ...
 
 local spellLocalizerFrame = CreateFrame("Frame", "DevSpellLocalizerFrame", DevMainFrame, "BackdropTemplate")
 spellLocalizerFrame:Hide()
+spellLocalizerFrame:SetMovable(true)
+spellLocalizerFrame:SetUserPlaced(true)
 spellLocalizerFrame:SetPoint("CENTER", UIParent)
 spellLocalizerFrame:SetSize(400, 500)
 Dev:StylizeFrame(spellLocalizerFrame)
@@ -14,9 +16,19 @@ end)
 
 local localizeBtn = Dev:CreateButton(spellLocalizerFrame, "Localize", "blue", {350, 20})
 localizeBtn:SetPoint("BOTTOMLEFT", spellLocalizerFrame, "TOPLEFT", 0, -1)
+
+localizeBtn:RegisterForDrag("LeftButton")
+localizeBtn:SetClampedToScreen(true)
+localizeBtn:SetScript("OnDragStart", function()
+    spellLocalizerFrame:StartMoving()
+end)
+localizeBtn:SetScript("OnDragStop", function()
+    spellLocalizerFrame:StopMovingOrSizing()
+end)
+
 localizeBtn:SetScript("OnClick", function()
     local text = scroll.eb:GetText()
-    if not text then return end
+    if text == "" then return end
 
     scroll.eb:SetText("")
 
