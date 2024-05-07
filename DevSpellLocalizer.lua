@@ -43,21 +43,23 @@ localizeBtn:SetScript("OnClick", function()
         if line:find("[%[%]{}=]") then
             spacing = "    "
         else
-            line = line:match("\"?-?%d+\"?")
+            local match = line:match("\"?-?%d+\"?")
 
-            local oldLine = line
-            line = line:gsub("[^%d]", "")
+            if match then
+                local oldLine = match
+                line = line:gsub("[^%d]", "")
 
-            local id = tonumber(line)
-            if id then
-                local name = GetSpellInfo(abs(id))
-                if name then
-                    line = spacing..oldLine..", -- "..name
+                local id = tonumber(line)
+                if id then
+                    local name = GetSpellInfo(abs(id))
+                    if name then
+                        line = spacing..oldLine..", -- "..name
+                    else
+                        line = nil
+                    end
                 else
                     line = nil
                 end
-            else
-                line = nil
             end
         end
         t[i] = line

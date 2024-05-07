@@ -2,9 +2,15 @@ local _, Dev = ...
 local P = Dev.pixelPerfectFuncs
 
 local MACRO_PREFIX = "!Dev-" --! if use _ in macro name, icon can't be saved. why?
-local BUTTON_WIDTH = 100
+local BUTTON_WIDTH = 107
 local BUTTON_HEIGHT = 20
 local SPACING = 3
+
+local DEV_TYPE_COLOR="|cff88ff88"
+local DEV_TABLEREF_COLOR="|cffffcc00"
+local DEV_CUTOFF_COLOR="|cffff0000"
+local DEV_TABLEKEY_COLOR="|cff88ccff"
+local DEV_NIL_COLOR = "|cffb2b2b2"
 
 local escapeSequences = {
     [ "\a" ] = "\\a", -- Bell
@@ -18,6 +24,37 @@ local escapeSequences = {
     [ "\"" ] = "\\\"", -- Quotation mark
     [ "|" ]  = "||",
 }
+
+local function PrintTableWithKeyNames(t, keys, extra)
+    print("--------------------------------------------------")
+    if extra then
+        print(extra)
+    end
+
+    for i, k in ipairs(keys) do
+        local v = t[i]
+        k = "\""..k.."\""
+
+        if not v then
+            print(string.format(DEV_TABLEKEY_COLOR.."[%s]|r="..DEV_NIL_COLOR.."nil", k))
+        else
+            local vType = type(v)
+    
+            if vType == "string" then
+                if v:match(".*|H.*|h.*") then
+                    print(string.format(DEV_TABLEKEY_COLOR.."[%s]|r=%s", k, v))
+                else
+                    print(string.format(DEV_TABLEKEY_COLOR.."[%s]|r=\"%s\"", k, v))
+                end
+            elseif vType == "number" or vType == "boolean" then
+                print(string.format(DEV_TABLEKEY_COLOR.."[%s]|r=%s", k, tostring(v)))
+            else
+                print(string.format(DEV_TABLEKEY_COLOR.."[%s]|r="..DEV_TYPE_COLOR.."<"..vType..">", k))
+            end
+        end
+    end
+    print("--------------------------------------------------")
+end
 
 --{name/addonName, type, action, dependOnAddon, hasEditBox}
 local buttons = {
@@ -66,10 +103,10 @@ local buttons = {
     {"|cffffff77InstanceList", "function", function(tier)
         Dev:ShowInstanceList(tier)
     end, nil, true},
-    {"|cffff77ffSpellLocalizer", "function", function()
+    {"|cff7fff00SpellLocalizer", "function", function()
         Dev:ShowSpellLocalizer()
     end},
-    {"|cffff77ffGetItemIcons", "function", function(b)
+    {"|cff7fff00GetItemIcons", "function", function(b)
         b:SetEnabled(false)
         
         local index = 1
@@ -101,11 +138,21 @@ local buttons = {
             end
         end)
     end},
-    {"|cff77ffffGetSpellInfo", "function", function(spellId)
-        DevTools_Dump({GetSpellInfo(spellId)})
+    {"|cff77ffffSpellInfo", "function", function(spellId)
+        local keys = {"name", "rank", "icon", "castTime", "minRange", "maxRange", "spellID", "originalIcon"}
+        PrintTableWithKeyNames({GetSpellInfo(spellId)}, keys, GetSpellLink(spellId))
     end, nil, true},
-    {"|cff77ffffPrintItemInfo", "function", function(itemId)
-        print(C_Item.GetItemInfo(itemId))
+    {"|cff77ffffItemInfo", "function", function(itemId)
+        local keys = {"itemName", "itemLink", "itemQuality", "itemLevel", "itemMinLevel", "itemType", "itemSubType", "itemStackCount", "itemEquipLoc",
+            "itemTexture", "sellPrice", "classID", "subclassID", "bindType", "expansionID", "setID", "isCraftingReagent"}
+        PrintTableWithKeyNames({C_Item.GetItemInfo(itemId)}, keys)
+    end, nil, true},
+    {"|cff77ffffAchievementInfo", "function", function(achievementId)
+        local keys = {"id", "name", "points", "completed", "month", "day", "year", "description", "flags", "icon", "rewardText", "isGuild",
+            "wasEarnedByMe", "earnedBy", "isStatistic", "numCriteria"}
+        local t = {GetAchievementInfo(achievementId)}
+        tinsert(t, GetAchievementNumCriteria(achievementId))
+        PrintTableWithKeyNames(t, keys, GetAchievementLink(achievementId))
     end, nil, true},
     {"InterfaceUsage", "macro", "/iu", "InterfaceUsage"},
     {"APIInterface", "macro", "/apii", "APIInterface"},
