@@ -24,24 +24,24 @@ local accentColor = {0.6, 0.1, 0.1, 1}
 -----------------------------------------
 -- font
 -----------------------------------------
-local font = "Interface/AddOns/!Dev/Libs/Accidental_Presidency.ttf"
+local font = "Interface/AddOns/!Dev/Libs/MyriadCondensedWeb.ttf"
 
 local font_normal = CreateFont("DEV_FONT_NORMAL")
-font_normal:SetFont(font, 14, "")
+font_normal:SetFont(font, 13, "")
 font_normal:SetTextColor(1, 1, 1, 1)
 font_normal:SetShadowColor(0, 0, 0)
 font_normal:SetShadowOffset(1, -1)
 font_normal:SetJustifyH("CENTER")
 
 local font_disabled = CreateFont("DEV_FONT_DISABLED")
-font_disabled:SetFont(font, 14, "")
+font_disabled:SetFont(font, 13, "")
 font_disabled:SetTextColor(.4, .4, .4, 1)
 font_disabled:SetShadowColor(0, 0, 0)
 font_disabled:SetShadowOffset(1, -1)
 font_disabled:SetJustifyH("CENTER")
 
 local font_title = CreateFont("DEV_FONT_TITLE")
-font_title:SetFont(font, 15, "")
+font_title:SetFont(font, 14, "")
 font_title:SetTextColor(1, 1, 1, 1)
 font_title:SetShadowColor(0, 0, 0)
 font_title:SetShadowOffset(1, -1)

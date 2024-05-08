@@ -285,7 +285,7 @@ local buttons = {
 
     -- custom
     {
-        {"wipe CellDB", "script", "CellDB=nil;ReloadUI()", "Cell", false, "green"},
+        {"reset Cell", "macro", "/cell reset all", "Cell", false, "green"},
         {"AW_DEMO", "script", "BigFootInfinite.AW:ShowDemo()", "BigFootInfinite", false, "blue"},
         {"BFI.current", "script", "texplore(BigFootInfinite.vars.currentConfigTable)", "BigFootInfinite", false, "blue"},
         {"wipe BFI", "script", "BFIConfig=nil;ReloadUI()", "BigFootInfinite", false, "green"},
