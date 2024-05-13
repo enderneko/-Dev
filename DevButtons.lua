@@ -194,6 +194,9 @@ local buttons = {
         {"|cffffff77InstanceList", "function", function(tier)
             Dev:ShowInstanceList(tier)
         end, nil, true},
+        {"|cff7fff00ColorConverter", "function", function()
+            Dev:ShowColorConverter()
+        end},
         {"|cff7fff00SpellLocalizer", "function", function()
             Dev:ShowSpellLocalizer()
         end},

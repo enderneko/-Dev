@@ -14,4 +14,5 @@ DevMain.lua
 DevConfig.lua
 DevInstanceList.lua
 DevSpellLocalizer.lua
+DevColorConverter.lua
 DevButtons.lua
