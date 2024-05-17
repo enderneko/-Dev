@@ -254,6 +254,86 @@ local buttons = {
 
     -- others
     {
+        {"|cffffdeadFrameTemplates", "function", function()
+            if TemplatePreviewParent then
+                if TemplatePreviewParent:IsShown() then
+                    TemplatePreviewParent:Hide()
+                    UIParent:Show()
+                else
+                    TemplatePreviewParent:Show()
+                    UIParent:Hide()
+                end
+                return
+            end
+
+            UIParent:Hide()
+
+            local frameList = {
+                "BaseBasicFrameTemplate",
+                "BasicFrameTemplate",
+                "BasicFrameTemplateWithInset",
+                "ButtonFrameTemplate",
+                "ButtonFrameTemplateMinimizable",
+                "ChatConfigBorderBoxTemplate",
+                "ChatConfigBoxTemplate",
+                "ChatConfigBoxWithHeaderTemplate",
+                "ChatConfigCheckBoxTemplate",
+                -- "CovenantListWideFrameTemplate",
+                -- "CovenantMissionBaseFrameTemplate",
+                "DefaultPanelTemplate",
+                "DefaultPanelTemplate",
+                "EtherealFrameTemplate",
+                "FloatingBorderedFrame",
+                -- "GarrisonMissionBaseFrameTemplate",
+                "GlowBorderTemplate",
+                "GlowBoxTemplate",
+                "HelpFrameContainerFrameTemplate",
+                "InsetFrameTemplate",
+                "InsetFrameTemplate2",
+                "InsetFrameTemplate3",
+                "InsetFrameTemplate4",
+                -- "KeyBindingFrameBindingButtonTemplate",
+                -- "KeyBindingFrameBindingButtonTemplateWithLabel",
+                "PortraitFrameTemplate",
+                "PortraitFrameTemplateMinimizable",
+                "PortraitFrameTemplateNoCloseButton",
+                "SimplePanelTemplate",
+                "ThinBorderTemplate",
+                "TooltipBorderedFrameTemplate",
+                "TranslucentFrameTemplate",
+                "UIPanelDialogTemplate",
+            }
+             
+            local width, height = 210, 110
+            local spacing = 15
+
+            local parent = CreateFrame("Frame", "TemplatePreviewParent")
+            parent:SetAllPoints()
+            parent:SetScale(768 / GetScreenHeight())
+            
+            local function Create(k, template)
+                local f = CreateFrame("Frame", "TemplatePreviewFrame"..k, parent, template)
+                f:SetSize(width, height)
+                
+                local fs = f:CreateFontString(nil, "OVERLAY", "DEV_FONT_TITLE")
+                fs:SetPoint("BOTTOMLEFT", 5, 10)
+                fs:SetPoint("BOTTOMRIGHT", -5, 10)
+                fs:SetNonSpaceWrap(true)
+                fs:SetText(template)
+                
+                if k == 1 then
+                    f:SetPoint("TOPLEFT", 10, -10)
+                elseif k % 7 == 1 then
+                    f:SetPoint("TOPLEFT", _G["TemplatePreviewFrame"..(k-7)], "TOPRIGHT", spacing, 0)
+                else
+                    f:SetPoint("TOPLEFT", _G["TemplatePreviewFrame"..(k-1)], "BOTTOMLEFT", 0, -spacing)
+                end
+            end
+            
+            for k, template in pairs(frameList) do
+                pcall(Create, k, template)
+            end
+        end},
         {"InterfaceUsage", "macro", "/iu", "InterfaceUsage"},
         {"APIInterface", "macro", "/apii", "APIInterface"},
         {"TextureViewer", "macro", "/texview", "TextureViewer"},
