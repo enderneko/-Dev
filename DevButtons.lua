@@ -107,7 +107,7 @@ local function CreateDevButton(parent, t)
     local b = Dev:CreateButton(bg, bName, color or "red", {BUTTON_WIDTH, BUTTON_HEIGHT}, false, true)
     b:SetPoint("TOPLEFT", BUTTON_SPACING, 0)
 
-    if not bDependOnAddon or IsAddOnLoaded(bDependOnAddon) then
+    if not bDependOnAddon or C_AddOns.IsAddOnLoaded(bDependOnAddon) then
         if bType == "macro" then
             -- https://wow.gamepedia.com/SecureActionButtonTemplate
             b:SetAttribute("type1", "macro") -- left click causes macro
