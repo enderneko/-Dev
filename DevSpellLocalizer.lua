@@ -1,5 +1,16 @@
 local _, Dev = ...
 
+local function GetSpellName(id)
+    if C_Spell.GetSpellInfo then
+        local info = C_Spell.GetSpellInfo(id)
+        if info then
+            return info.name
+        end
+    else
+        return GetSpellInfo(id)
+    end
+end
+
 local spellLocalizerFrame = CreateFrame("Frame", "DevSpellLocalizerFrame", DevMainFrame, "BackdropTemplate")
 spellLocalizerFrame:Hide()
 spellLocalizerFrame:SetMovable(true)
@@ -54,7 +65,7 @@ localizeBtn:SetScript("OnClick", function()
 
                 local id = tonumber(line)
                 if id then
-                    local name = GetSpellInfo(abs(id))
+                    local name = GetSpellName(abs(id))
                     if name then
                         line = spacing..oldLine..", -- "..name
                     else
@@ -120,7 +131,7 @@ localizeBtn2:SetScript("OnClick", function()
 
             local id = tonumber(line)
             if id then
-                local name = GetSpellInfo(id)
+                local name = GetSpellName(id)
                 if name then
                     line = oldLine.." -- "..name
                 else

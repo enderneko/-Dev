@@ -236,7 +236,7 @@ local buttons = {
         end},
         {"|cff77ffffSpellInfo", "function", function(spellId)
             local keys = {"name", "rank", "icon", "castTime", "minRange", "maxRange", "spellID", "originalIcon"}
-            PrintTableWithKeyNames({GetSpellInfo(spellId)}, keys, GetSpellLink(spellId))
+            PrintTableWithKeyNames(C_Spell.GetSpellInfo(spellId), keys, C_Spell.GetSpellLink(spellId))
         end, nil, true},
         {"|cff77ffffItemInfo", "function", function(itemId)
             local keys = {"itemName", "itemLink", "itemQuality", "itemLevel", "itemMinLevel", "itemType", "itemSubType", "itemStackCount", "itemEquipLoc",
@@ -371,7 +371,7 @@ local buttons = {
         {"reset Cell", "macro", "/cell reset all", "Cell", false, "green"},
         {"AW_DEMO", "script", "BigFootInfinite.AW:ShowDemo()", "BigFootInfinite", false, "blue"},
         {"BFI.current", "script", "texplore(BigFootInfinite.vars.currentConfigTable)", "BigFootInfinite", false, "blue"},
-        {"wipe BFI", "script", "BFIConfig=nil;ReloadUI()", "BigFootInfinite", false, "green"},
+        {"wipe BFI", "script", "BFIConfig=nil;BFIPlayer=nil;BFIGuild=nil;ReloadUI()", "BigFootInfinite", false, "green"},
     },
     -- {"Abstract data", "script", "texplore(\"Abstract\", Abstract.data, 10)", "Abstract"},
     -- {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract", false, "green"},
