@@ -1,4 +1,4 @@
-## Interface: 100207,110002
+## Interface: 110000,110002
 ## Title: |cFFFF3030DevTools|r
 ## Author: enderneko
 ## SavedVariables: DevDB,DevInstance,DevInstanceDebuffs,DevTableSaver,DevItemIcons

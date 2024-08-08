@@ -12,6 +12,8 @@ local DEV_CUTOFF_COLOR="|cffff0000"
 local DEV_TABLEKEY_COLOR="|cff88ccff"
 local DEV_NIL_COLOR = "|cffb2b2b2"
 
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+
 ---------------------------------------------------------------------
 -- frame
 ---------------------------------------------------------------------
@@ -80,7 +82,7 @@ local function PrintTableWithKeyNames(t, keys, extra)
             print(string.format(DEV_TABLEKEY_COLOR.."[%s]|r="..DEV_NIL_COLOR.."nil", k))
         else
             local vType = type(v)
-    
+
             if vType == "string" then
                 if v:match(".*|H.*|h.*") then
                     print(string.format(DEV_TABLEKEY_COLOR.."[%s]|r=%s", k, v))
@@ -107,7 +109,7 @@ local function CreateDevButton(parent, t)
     local b = Dev:CreateButton(bg, bName, color or "red", {BUTTON_WIDTH, BUTTON_HEIGHT}, false, true)
     b:SetPoint("TOPLEFT", BUTTON_SPACING, 0)
 
-    if not bDependOnAddon or C_AddOns.IsAddOnLoaded(bDependOnAddon) then
+    if not bDependOnAddon or IsAddOnLoaded(bDependOnAddon) then
         if bType == "macro" then
             -- https://wow.gamepedia.com/SecureActionButtonTemplate
             b:SetAttribute("type1", "macro") -- left click causes macro
@@ -204,7 +206,7 @@ local buttons = {
             if type(DevItemIcons) ~= "table" then return end
 
             b:SetEnabled(false)
-            
+
             local index = 1
             local isProcessing = false
             local num = #DevItemIcons
@@ -222,7 +224,7 @@ local buttons = {
                             value = value .. ":nil"
                         end
                         DevItemIcons[index] = value
-                        
+
                         b:SetFormattedText("%.2f%%", index / num * 100)
                         index = index + 1
                         isProcessing = false
@@ -303,24 +305,24 @@ local buttons = {
                 "TranslucentFrameTemplate",
                 "UIPanelDialogTemplate",
             }
-             
+
             local width, height = 210, 110
             local spacing = 15
 
             local parent = CreateFrame("Frame", "TemplatePreviewParent")
             parent:SetAllPoints()
             parent:SetScale(768 / GetScreenHeight())
-            
+
             local function Create(k, template)
                 local f = CreateFrame("Frame", "TemplatePreviewFrame"..k, parent, template)
                 f:SetSize(width, height)
-                
+
                 local fs = f:CreateFontString(nil, "OVERLAY", "DEV_FONT_TITLE")
                 fs:SetPoint("BOTTOMLEFT", 5, 10)
                 fs:SetPoint("BOTTOMRIGHT", -5, 10)
                 fs:SetNonSpaceWrap(true)
                 fs:SetText(template)
-                
+
                 if k == 1 then
                     f:SetPoint("TOPLEFT", 10, -10)
                 elseif k % 7 == 1 then
@@ -329,7 +331,7 @@ local buttons = {
                     f:SetPoint("TOPLEFT", _G["TemplatePreviewFrame"..(k-1)], "BOTTOMLEFT", 0, -spacing)
                 end
             end
-            
+
             for k, template in pairs(frameList) do
                 pcall(Create, k, template)
             end
