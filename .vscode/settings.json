@@ -12,7 +12,11 @@
         "utf8": "disable"
     },
     "Lua.workspace.library": [
-        "$USERPROFILE\\.vscode\\extensions\\ketho.wow-api-0.15.7\\Annotations"
+        "~\\.vscode\\extensions\\ketho.wow-api-0.17.4\\Annotations\\Data",
+        "~\\.vscode\\extensions\\ketho.wow-api-0.17.4\\Annotations\\Interface",
+        "~\\.vscode\\extensions\\ketho.wow-api-0.17.4\\Annotations\\Libraries",
+        "~\\.vscode\\extensions\\ketho.wow-api-0.17.4\\Annotations\\Type",
+        "~\\.vscode\\extensions\\ketho.wow-api-0.17.4\\Annotations\\Widget"
     ],
     "Lua.diagnostics.globals": [],
     "files.trimTrailingWhitespace": true,

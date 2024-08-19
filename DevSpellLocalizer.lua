@@ -171,6 +171,6 @@ end)
 function Dev:ShowSpellLocalizer()
     scroll.eb:SetText("")
     spellLocalizerFrame:Show()
-    
+
     scroll.eb:SetCursorPosition(0)
 end

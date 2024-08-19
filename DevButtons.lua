@@ -372,6 +372,7 @@ local buttons = {
     {
         {"reset Cell", "macro", "/cell reset all", "Cell", false, "green"},
         {"AW_DEMO", "script", "BigFootInfinite.AW:ShowDemo()", "BigFootInfinite", false, "blue"},
+        {"BFI Config Mode", "script", "BFI.Fire(\"ConfigMode\")", "BigFootInfinite", false, "yellow"},
         {"BFI.current", "script", "texplore(BigFootInfinite.vars.currentConfigTable)", "BigFootInfinite", false, "blue"},
         {"wipe BFI", "script", "BFIConfig=nil;BFIPlayer=nil;BFIGuild=nil;ReloadUI()", "BigFootInfinite", false, "green"},
     },
