@@ -53,6 +53,25 @@ Dev.dialog.close:SetScript("OnClick", function()
 end)
 
 ---------------------------------------------------------------------
+-- text frame
+---------------------------------------------------------------------
+local textFrame = CreateFrame("Frame", "DevInstanceListFrame", DevMainFrame, "BackdropTemplate")
+textFrame:Hide()
+textFrame:SetPoint("CENTER", UIParent)
+textFrame:SetSize(400, 500)
+Dev:StylizeFrame(textFrame)
+
+local closeBtn = Dev:CreateButton(textFrame, "Close", "red", {20, 20})
+closeBtn:SetPoint("BOTTOMLEFT", textFrame, "TOPLEFT", 0, -1)
+closeBtn:SetPoint("BOTTOMRIGHT", textFrame, "TOPRIGHT", 0, -1)
+closeBtn:SetScript("OnClick", function()
+    textFrame:Hide()
+end)
+
+local scroll = Dev:CreateScrollEditBox(textFrame)
+scroll:SetAllPoints(textFrame)
+
+---------------------------------------------------------------------
 -- functions
 ---------------------------------------------------------------------
 local escapeSequences = {
@@ -100,7 +119,7 @@ local function PrintTableWithKeyNames(t, keys, extra)
 end
 
 local function CreateDevButton(parent, t)
-    local bName, bType, bAction, bDependOnAddon, bHasEditBox, color = unpack(t)
+    local bName, bType, bAction, bDependOnAddon, bHasEditBox, color, isModifierKeyRequired = unpack(t)
 
     local bg = Dev:CreateFrame(nil, parent, BUTTON_WIDTH + BUTTON_SPACING * 2, BUTTON_HEIGHT + BUTTON_SPACING, isTransparent)
     Dev:StylizeFrame(bg, {0, 0, 0, 0.7}, {0, 0, 0, 0})
@@ -118,13 +137,14 @@ local function CreateDevButton(parent, t)
         elseif bType == "script" then
             if bHasEditBox then
                 b.eb = Dev:CreateEditBox(b, BUTTON_WIDTH, BUTTON_HEIGHT)
-                b.eb:SetBackdropBorderColor(1, 0, 0, 1)
+                b.eb:SetBackdropBorderColor(unpack(b.hoverColor))
                 b.eb:SetPoint("TOPLEFT", b, "BOTTOMLEFT")
                 bg:SetHeight(BUTTON_HEIGHT * 2 + BUTTON_SPACING)
             end
 
             b:SetScript("OnClick", function(self, button, down)
                 if not down then return end
+                if isModifierKeyRequired and not IsModifierKeyDown() then return end
                 if bHasEditBox then
                     local p = b.eb:GetText()
                     local script = string.gsub(bAction, "%$", p)
@@ -137,13 +157,14 @@ local function CreateDevButton(parent, t)
         elseif bType == "function" then
             if bHasEditBox then
                 b.eb = Dev:CreateEditBox(b, BUTTON_WIDTH, BUTTON_HEIGHT)
-                b.eb:SetBackdropBorderColor(1, 0, 0, 1)
+                b.eb:SetBackdropBorderColor(unpack(b.hoverColor))
                 b.eb:SetPoint("TOP", b, "BOTTOM")
                 bg:SetHeight(BUTTON_HEIGHT * 2 + BUTTON_SPACING)
             end
 
             b:SetScript("OnClick", function(self, button, down)
                 if not down then return end
+                if isModifierKeyRequired and not IsModifierKeyDown() then return end
                 if b.eb then
                     bAction(b.eb:GetText())
                 else
@@ -156,6 +177,14 @@ local function CreateDevButton(parent, t)
     end
 
     return bg
+end
+
+local function GetSpellName(id)
+    if C_Spell.GetSpellName then
+        return C_Spell.GetSpellName(id)
+    else
+        return GetSpellInfo(id)
+    end
 end
 
 ---------------------------------------------------------------------
@@ -370,11 +399,43 @@ local buttons = {
 
     -- custom
     {
-        {"reset Cell", "macro", "/cell reset all", "Cell", false, "green"},
+        {"reset Cell", "macro", "/cell reset all", "Cell", false, "green", true},
+        {"RaidDebuffs", "function", function(id)
+            id = id and tonumber(id)
+            if not (id and Cell.snippetVars.loadedDebuffs[id]) then return end
+
+            local result = ""
+            local t = Cell.snippetVars.loadedDebuffs[id]
+
+            for boss, debuffs in pairs(t) do
+                result = result .. "[" .. boss .. "] = {\n"
+                -- enabled
+                for _, dt in pairs(debuffs["enabled"]) do
+                    local name = GetSpellName(dt.id)
+                    if name then
+                        local id = dt.trackByID and ("\""..dt.id.."\"") or dt.id
+                        result = result .. "    " .. id .. ", -- " .. name .. "\n"
+                    end
+                end
+                -- disabled
+                for _, dt in pairs(debuffs["disabled"]) do
+                    local name = GetSpellName(dt.id)
+                    if name then
+                        local id = dt.trackByID and ("\"-"..dt.id.."\"") or -dt.id
+                        result = result .. "    " .. id .. ", -- " .. name .. "\n"
+                    end
+                end
+
+                result = result .. "},\n"
+            end
+
+            scroll:SetText(result)
+            textFrame:Show()
+        end, "Cell", true, "blue"},
         {"AW_DEMO", "script", "BigFootInfinite.AW:ShowDemo()", "BigFootInfinite", false, "blue"},
         {"BFI Config Mode", "script", "BFI.Fire(\"ConfigMode\")", "BigFootInfinite", false, "yellow"},
         {"BFI.current", "script", "texplore(BigFootInfinite.vars.currentConfigTable)", "BigFootInfinite", false, "blue"},
-        {"wipe BFI", "script", "BFIConfig=nil;BFIPlayer=nil;BFIGuild=nil;ReloadUI()", "BigFootInfinite", false, "green"},
+        {"wipe BFI", "script", "BFIConfig=nil;BFIPlayer=nil;BFIGuild=nil;ReloadUI()", "BigFootInfinite", false, "green", true},
     },
     -- {"Abstract data", "script", "texplore(\"Abstract\", Abstract.data, 10)", "Abstract"},
     -- {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract", false, "green"},
