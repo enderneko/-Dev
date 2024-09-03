@@ -399,7 +399,7 @@ local buttons = {
 
     -- custom
     {
-        {"reset Cell", "macro", "/cell reset all", "Cell", false, "green", true},
+        {"reset Cell", "script", "CellDB=nil;CellCharacterDB=nil;ReloadUI()", "Cell", false, "green", true},
         {"RaidDebuffs", "function", function(id)
             id = id and tonumber(id)
             if not (id and Cell.snippetVars.loadedDebuffs[id]) then return end
