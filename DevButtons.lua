@@ -434,6 +434,7 @@ local buttons = {
         end, "Cell", true, "blue"},
         {"AW_DEMO", "script", "BigFootInfinite.AW:ShowDemo()", "BigFootInfinite", false, "blue"},
         {"BFI Config Mode", "script", "BFI.Fire(\"ConfigMode\")", "BigFootInfinite", false, "yellow"},
+        {"BFI Movers", "macro", "/bfi mover", "BigFootInfinite", false, "yellow"},
         {"BFI.current", "script", "texplore(BigFootInfinite.vars.currentConfigTable)", "BigFootInfinite", false, "blue"},
         {"wipe BFI", "script", "BFIConfig=nil;BFIPlayer=nil;BFIGuild=nil;ReloadUI()", "BigFootInfinite", false, "green", true},
     },
