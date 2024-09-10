@@ -285,6 +285,40 @@ local buttons = {
 
     -- others
     {
+        {"|cff77ffffCLEU", "function", function(subEvent)
+            if not DevCLEUFrame then
+                DevCLEUFrame = CreateFrame("Frame")
+                DevCLEUFrame:SetScript("OnEvent", function()
+                    local timestamp, subEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, arg1, arg2, arg3, arg4, arg5, arg6, arg7 = CombatLogGetCurrentEventInfo()
+                    if DevCLEUFrame.subEvent then
+                        if DevCLEUFrame.subEvent == subEvent then
+                            print(timestamp, sourceName, destName, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
+                        end
+                    else
+                        print(timestamp, subEvent, sourceName, destName, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
+                    end
+                end)
+            end
+
+            if strtrim(subEvent) ~= "" then
+                DevCLEUFrame.subEvent = subEvent
+            else
+                DevCLEUFrame.subEvent = nil
+            end
+
+            if DevCLEUFrame.enabled then
+                if DevCLEUFrame.subEvent then
+                    print("|cff77ffffCLEU|r:disabled, subEvent:" .. DevCLEUFrame.subEvent)
+                else
+                    print("|cff77ffffCLEU|r:disabled")
+                end
+                DevCLEUFrame:UnregisterAllEvents()
+            else
+                print("|cff77ffffCLEU|r:enabled")
+                DevCLEUFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+            end
+            DevCLEUFrame.enabled = not DevCLEUFrame.enabled
+        end, nil, true},
         {"|cffffdeadFrameTemplates", "function", function()
             if TemplatePreviewParent then
                 if TemplatePreviewParent:IsShown() then
