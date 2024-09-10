@@ -266,20 +266,29 @@ local buttons = {
             end)
         end},
         {"|cff77ffffSpellInfo", "function", function(spellId)
-            local keys = {"name", "rank", "icon", "castTime", "minRange", "maxRange", "spellID", "originalIcon"}
-            PrintTableWithKeyNames(C_Spell.GetSpellInfo(spellId), keys, C_Spell.GetSpellLink(spellId))
+            spellId = tonumber(spellId)
+            if spellId then
+                local keys = {"name", "rank", "icon", "castTime", "minRange", "maxRange", "spellID", "originalIcon"}
+                PrintTableWithKeyNames(C_Spell.GetSpellInfo(spellId), keys, C_Spell.GetSpellLink(spellId))
+            end
         end, nil, true},
         {"|cff77ffffItemInfo", "function", function(itemId)
-            local keys = {"itemName", "itemLink", "itemQuality", "itemLevel", "itemMinLevel", "itemType", "itemSubType", "itemStackCount", "itemEquipLoc",
-                "itemTexture", "sellPrice", "classID", "subclassID", "bindType", "expansionID", "setID", "isCraftingReagent"}
-            PrintTableWithKeyNames({C_Item.GetItemInfo(itemId)}, keys)
+            itemId = tonumber(itemId)
+            if itemId then
+                local keys = {"itemName", "itemLink", "itemQuality", "itemLevel", "itemMinLevel", "itemType", "itemSubType", "itemStackCount", "itemEquipLoc",
+                    "itemTexture", "sellPrice", "classID", "subclassID", "bindType", "expansionID", "setID", "isCraftingReagent"}
+                PrintTableWithKeyNames({C_Item.GetItemInfo(itemId)}, keys)
+            end
         end, nil, true},
         {"|cff77ffffAchievementInfo", "function", function(achievementId)
-            local keys = {"id", "name", "points", "completed", "month", "day", "year", "description", "flags", "icon", "rewardText", "isGuild",
-                "wasEarnedByMe", "earnedBy", "isStatistic", "numCriteria"}
-            local t = {GetAchievementInfo(achievementId)}
-            tinsert(t, GetAchievementNumCriteria(achievementId))
-            PrintTableWithKeyNames(t, keys, GetAchievementLink(achievementId))
+            achievementId = tonumber(achievementId)
+            if achievementId then
+                local keys = {"id", "name", "points", "completed", "month", "day", "year", "description", "flags", "icon", "rewardText", "isGuild",
+                    "wasEarnedByMe", "earnedBy", "isStatistic", "numCriteria"}
+                local t = {GetAchievementInfo(achievementId)}
+                tinsert(t, GetAchievementNumCriteria(achievementId))
+                PrintTableWithKeyNames(t, keys, GetAchievementLink(achievementId))
+            end
         end, nil, true},
     },
 
