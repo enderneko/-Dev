@@ -335,6 +335,9 @@ local buttons = {
                     UIParent:Show()
                 else
                     TemplatePreviewParent:Show()
+                    for _, f in pairs(TemplatePreviewParent.frames) do
+                        f:Show()
+                    end
                     UIParent:Hide()
                 end
                 return
@@ -355,7 +358,8 @@ local buttons = {
                 -- "CovenantListWideFrameTemplate",
                 -- "CovenantMissionBaseFrameTemplate",
                 "DefaultPanelTemplate",
-                "DefaultPanelTemplate",
+                "FlatPanelBackgroundTemplate",
+                "SettingsFrameTemplate",
                 "EtherealFrameTemplate",
                 "FloatingBorderedFrame",
                 -- "GarrisonMissionBaseFrameTemplate",
@@ -376,6 +380,7 @@ local buttons = {
                 "TooltipBorderedFrameTemplate",
                 "TranslucentFrameTemplate",
                 "UIPanelDialogTemplate",
+                -- "UIPanelButtonTemplate",
             }
 
             local width, height = 210, 110
@@ -385,8 +390,14 @@ local buttons = {
             parent:SetAllPoints()
             parent:SetScale(768 / GetScreenHeight())
 
+            parent.frames = {}
+            parent:SetScript("OnShow", function()
+
+            end)
+
             local function Create(k, template)
                 local f = CreateFrame("Frame", "TemplatePreviewFrame"..k, parent, template)
+                parent.frames[k] = f
                 f:SetSize(width, height)
 
                 local fs = f:CreateFontString(nil, "OVERLAY", "DEV_FONT_TITLE")
@@ -398,9 +409,9 @@ local buttons = {
                 if k == 1 then
                     f:SetPoint("TOPLEFT", 10, -10)
                 elseif k % 7 == 1 then
-                    f:SetPoint("TOPLEFT", _G["TemplatePreviewFrame"..(k-7)], "TOPRIGHT", spacing, 0)
+                    f:SetPoint("TOPLEFT", parent.frames[k-7], "TOPRIGHT", spacing, 0)
                 else
-                    f:SetPoint("TOPLEFT", _G["TemplatePreviewFrame"..(k-1)], "BOTTOMLEFT", 0, -spacing)
+                    f:SetPoint("TOPLEFT", parent.frames[k-1], "BOTTOMLEFT", 0, -spacing)
                 end
             end
 
@@ -480,6 +491,7 @@ local buttons = {
         {"BFI Movers", "macro", "/bfi mover", "BigFootInfinite", false, "yellow"},
         {"BFI.current", "script", "texplore(BigFootInfinite.vars.currentConfigTable)", "BigFootInfinite", false, "blue"},
         {"wipe BFI", "script", "BFIConfig=nil;BFIPlayer=nil;BFIGuild=nil;ReloadUI()", "BigFootInfinite", false, "green", true},
+        {"BFC", "macro", "/bfc"},
     },
     -- {"Abstract data", "script", "texplore(\"Abstract\", Abstract.data, 10)", "Abstract"},
     -- {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract", false, "green"},
