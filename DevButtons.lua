@@ -486,9 +486,9 @@ local buttons = {
             scroll:SetText(result)
             textFrame:Show()
         end, "Cell", true, "blue"},
-        {"AW_DEMO", "script", "BigFootInfinite.AW:ShowDemo()", "BigFootInfinite", false, "blue"},
+        {"AF DEMO", "script", "AbstractFramework.ShowDemo()", "AbstractFramework", false, "magenta"},
+        {"AF Movers", "script", "AbstractFramework.ToggleMovers()", "AbstractFramework", false, "magenta"},
         {"BFI Config Mode", "script", "BFI.Fire(\"ConfigMode\")", "BigFootInfinite", false, "yellow"},
-        {"BFI Movers", "macro", "/bfi mover", "BigFootInfinite", false, "yellow"},
         {"BFI.current", "script", "texplore(BigFootInfinite.vars.currentConfigTable)", "BigFootInfinite", false, "blue"},
         {"wipe BFI", "script", "BFIConfig=nil;BFIPlayer=nil;BFIGuild=nil;ReloadUI()", "BigFootInfinite", false, "green", true},
         {"BFC", "macro", "/bfc"},
