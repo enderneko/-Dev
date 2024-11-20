@@ -250,7 +250,7 @@ local buttons = {
                         if icon then
                             value = value .. ":" .. icon
                         else
-                            value = value .. ":nil"
+                            value = value .. ":0"
                         end
                         DevItemIcons[index] = value
 
@@ -488,7 +488,7 @@ local buttons = {
         end, "Cell", true, "blue"},
         {"AF DEMO", "script", "AbstractFramework.ShowDemo()", "AbstractFramework", false, "magenta"},
         {"AF Movers", "script", "AbstractFramework.ToggleMovers()", "AbstractFramework", false, "magenta"},
-        {"BFI Config Mode", "script", "BFI.Fire(\"ConfigMode\")", "BigFootInfinite", false, "yellow"},
+        {"BFI Config Mode", "script", "BigFootInfinite.Fire(\"ConfigMode\")", "BigFootInfinite", false, "yellow"},
         {"BFI.current", "script", "texplore(BigFootInfinite.vars.currentConfigTable)", "BigFootInfinite", false, "blue"},
         {"wipe BFI", "script", "BFIConfig=nil;BFIPlayer=nil;BFIGuild=nil;ReloadUI()", "BigFootInfinite", false, "green", true},
         {"BFC", "macro", "/bfc"},
