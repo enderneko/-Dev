@@ -20,7 +20,7 @@ local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded
 local devButtonsFrame = CreateFrame("Frame", "DevButtonsFrame", DevMainFrame, "BackdropTemplate")
 devButtonsFrame:Hide()
 devButtonsFrame:SetPoint("LEFT", 100, 0)
-devButtonsFrame:SetFrameStrata("LOW")
+devButtonsFrame:SetFrameStrata("HIGH")
 devButtonsFrame:SetHeight(20)
 devButtonsFrame:SetMovable(true)
 devButtonsFrame:SetUserPlaced(true)
@@ -94,7 +94,7 @@ local function PrintTableWithKeyNames(t, keys, extra)
     end
 
     for i, k in ipairs(keys) do
-        local v = t[i]
+        local v = t[k] or t[i]
         k = "\""..k.."\""
 
         if not v then
@@ -187,6 +187,26 @@ local function GetSpellName(id)
     end
 end
 
+if not DEV_BACKGROUND then
+    DEV_BACKGROUND = CreateFrame("Frame", "DEV_BACKGROUND", nil, "BackdropTemplate")
+    DEV_BACKGROUND:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8"})
+    DEV_BACKGROUND:SetBackdropColor(0.3, 0.3, 0.3, 1)
+    DEV_BACKGROUND:SetAllPoints(UIParent)
+    DEV_BACKGROUND:SetFrameStrata("BACKGROUND")
+    DEV_BACKGROUND:SetFrameLevel(0)
+    DEV_BACKGROUND:Hide()
+end
+
+if not DEV_EDITBOX then
+    DEV_EDITBOX = Dev:CreateScrollEditBox(devButtonsFrame)
+    DEV_EDITBOX:Hide()
+    DEV_EDITBOX:SetPoint("CENTER", UIParent)
+    DEV_EDITBOX:SetSize(600, 400)
+    DEV_EDITBOX.eb:SetScript("OnEscapePressed", function()
+        DEV_EDITBOX:Hide()
+    end)
+end
+
 ---------------------------------------------------------------------
 -- buttons
 ---------------------------------------------------------------------
@@ -197,20 +217,19 @@ local buttons = {
         {"|cff77ff77ClearChat", "script", "DEFAULT_CHAT_FRAME:Clear()"},
         {"|cff77ff77ReloadUI", "script", "ReloadUI()"},
         {"|cff77ff77fstack", "macro", "/fstack"},
-        {"backgroud", "function", function()
-            if not THE_BACKGROUND then
-                THE_BACKGROUND = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-                THE_BACKGROUND:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8"})
-                THE_BACKGROUND:SetBackdropColor(0.3, 0.3, 0.3, 1)
-                THE_BACKGROUND:SetAllPoints(UIParent)
-                THE_BACKGROUND:SetFrameStrata("BACKGROUND")
-                THE_BACKGROUND:SetFrameLevel(0)
-                THE_BACKGROUND:Hide()
-            end
-            if THE_BACKGROUND:IsShown() then
-                THE_BACKGROUND:Hide()
+        {"BACKGROUND", "function", function()
+            if DEV_BACKGROUND:IsShown() then
+                DEV_BACKGROUND:Hide()
             else
-                THE_BACKGROUND:Show()
+                DEV_BACKGROUND:SetBackdropColor(0.3, 0.3, 0.3, 1)
+                DEV_BACKGROUND:Show()
+            end
+        end},
+        {"EDITBOX", "function", function()
+            if DEV_EDITBOX:IsShown() then
+                DEV_EDITBOX:Hide()
+            else
+                DEV_EDITBOX:Show()
             end
         end},
         {"|cff77ffffcollectgarbage", "script", "collectgarbage(\"collect\")"},
@@ -231,7 +250,7 @@ local buttons = {
         {"|cff7fff00SpellLocalizer", "function", function()
             Dev:ShowSpellLocalizer()
         end},
-        {"|cff7fff00GetItemIcons", "function", function(b)
+        {"|cff7fff00UpdateItemIcons", "function", function(b)
             if type(DevItemIcons) ~= "table" then return end
 
             b:SetEnabled(false)
@@ -492,6 +511,7 @@ local buttons = {
         {"BFI.current", "script", "texplore(BigFootInfinite.vars.currentConfigTable)", "BigFootInfinite", false, "blue"},
         {"wipe BFI", "script", "BFIConfig=nil;BFIPlayer=nil;BFIGuild=nil;ReloadUI()", "BigFootInfinite", false, "green", true},
         {"BFC", "macro", "/bfc"},
+        {"ModelShowcase", "macro", "/ms", "ModelShowcase"},
     },
     -- {"Abstract data", "script", "texplore(\"Abstract\", Abstract.data, 10)", "Abstract"},
     -- {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract", false, "green"},

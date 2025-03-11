@@ -13,11 +13,11 @@ eventFrame:RegisterEvent("ADDON_LOADED")
 
 function eventFrame:ADDON_LOADED(arg1)
     if arg1 == addonName then
-		eventFrame:UnregisterEvent("ADDON_LOADED")
+        eventFrame:UnregisterEvent("ADDON_LOADED")
         if type(DevDB) ~= "table" then DevDB = {} end
         if type(DevDB["show"]) ~= "boolean" then DevDB["show"] = true end
         if type(DevDB["scale"]) ~= "number" then DevDB["scale"] = 1 end
-        
+
         if type(DevInstance) ~= "table" then
             DevInstance = {
                 ["instances"] = {
