@@ -540,7 +540,8 @@ local buttons = {
                     local recipeInfo = C_TradeSkillUI.GetRecipeInfo(id)
 
                     if not categories[recipeInfo.categoryID] then
-                        categories[recipeInfo.categoryID] = "Category: " .. recipeInfo.categoryID .. " " .. C_TradeSkillUI.GetCategoryInfo(recipeInfo.categoryID).name
+                        local categoryInfo = C_TradeSkillUI.GetCategoryInfo(recipeInfo.categoryID)
+                        categories[recipeInfo.categoryID] = "Category: " .. recipeInfo.categoryID .. " " .. (categoryInfo and categoryInfo.name or _G.UNKNOWN)
                     end
 
                     if not recipes[recipeInfo.categoryID] then
