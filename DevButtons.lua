@@ -512,6 +512,55 @@ local buttons = {
         {"wipe BFI", "script", "BFIConfig=nil;BFIPlayer=nil;BFIGuild=nil;ReloadUI()", "BigFootInfinite", false, "green", true},
         {"BFC", "macro", "/bfc"},
         {"ModelShowcase", "macro", "/ms", "ModelShowcase"},
+        {"Profession Info", "function", function()
+            DEV_EDITBOX.eb:SetText("")
+            if not C_TradeSkillUI.IsTradeSkillReady() then return end
+            -- https://warcraft.wiki.gg/wiki/TradeSkillLineID
+
+            local info = C_TradeSkillUI.GetBaseProfessionInfo()
+            DEV_EDITBOX.eb:Insert("ProfessionName: " .. info.professionName .. "\n")
+            DEV_EDITBOX.eb:Insert("Enum.Profession.Value: " .. info.profession .. "\n")
+            DEV_EDITBOX.eb:Insert("ProfessionID (SkillLineID): " .. info.professionID .. "\n")
+            -- DEV_EDITBOX.eb:Insert("ExpansionName: " .. info.expansionName .. "\n") -- always UNKNOWN
+            DEV_EDITBOX.eb:Insert("\n")
+
+
+            local childInfo = C_TradeSkillUI.GetChildProfessionInfo()
+            DEV_EDITBOX.eb:Insert("ChildProfessionName: " .. childInfo.professionName .. "\n")
+            DEV_EDITBOX.eb:Insert("ChildProfessionID (SkillLineID): " .. childInfo.professionID .. "\n")
+            DEV_EDITBOX.eb:Insert("\n")
+
+            -- categories & recipes
+            local recipes = {}
+            local categories = {}
+
+            for _, id in pairs(C_TradeSkillUI.GetAllRecipeIDs()) do
+                local professionID = C_TradeSkillUI.GetProfessionInfoByRecipeID(id).professionID
+                if childInfo.professionID == professionID then
+                    local recipeInfo = C_TradeSkillUI.GetRecipeInfo(id)
+
+                    if not categories[recipeInfo.categoryID] then
+                        categories[recipeInfo.categoryID] = "Category: " .. recipeInfo.categoryID .. " " .. C_TradeSkillUI.GetCategoryInfo(recipeInfo.categoryID).name
+                    end
+
+                    if not recipes[recipeInfo.categoryID] then
+                        recipes[recipeInfo.categoryID] = {}
+                    end
+
+                    tinsert(recipes[recipeInfo.categoryID], (recipeInfo.learned and "●" or "○") .. " " .. id .. " " .. recipeInfo.name)
+                end
+            end
+
+            for categoryID, desc in pairs(categories) do
+                DEV_EDITBOX.eb:Insert(desc .. "\n")
+                for _, recipe in pairs(recipes[categoryID]) do
+                    DEV_EDITBOX.eb:Insert("    " .. recipe .. "\n")
+                end
+                DEV_EDITBOX.eb:Insert("\n")
+            end
+
+            DEV_EDITBOX:Show()
+        end}
     },
     -- {"Abstract data", "script", "texplore(\"Abstract\", Abstract.data, 10)", "Abstract"},
     -- {"wipe AbstractDB", "script", "AbstractDB=nil;ReloadUI()", "Abstract", false, "green"},
